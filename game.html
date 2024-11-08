@@ -92,20 +92,20 @@
             background-color: #555555;
         }
 
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
+        #ascii-art-container {
+            font-family: monospace;
+            text-align: center;
+            white-space: pre;
+            font-size: 14px;
+            color: #00ff00;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-
-    <canvas id="bg" width="4800" height="4800"></canvas>
-
     <div id="screen-container">
         <div id="game-text"></div>
+        <div id="ascii-art-container"></div>
     </div>
 
     <div id="command-input">
@@ -116,61 +116,7 @@
     <script>
         const gameText = document.getElementById("game-text");
         const inputField = document.getElementById("input");
-
-        var bg = document.getElementById('bg'),
-            ctx = bg.getContext('2d'),
-            fishEyeCanvas = document.createElement('canvas'),
-            fishEyeCtx = fishEyeCanvas.getContext('2d');
-
-        fishEyeCanvas.width = 200;
-        fishEyeCanvas.height = 200;
-
-        function loadBackgroundImage(src) {
-            const img = new Image();
-            img.crossOrigin = 'Anonymous';
-            img.onload = () => {
-                ctx.drawImage(img, 0, 0, bg.width, bg.height);
-                window.addEventListener('mousemove', applyDistortion);
-            };
-            img.src = src;
-        }
-
-        function applyDistortion(e) {
-            const cx = e.clientX;
-            const cy = e.clientY;
-            fishEyeCtx.clearRect(0, 0, fishEyeCanvas.width, fishEyeCanvas.height);
-            fishEyeCtx.drawImage(bg, cx - 100, cy - 100, 200, 200, 0, 0, 200, 200);
-            applyFishEyeEffect();
-        }
-
-        function applyFishEyeEffect() {
-            const imgData = fishEyeCtx.getImageData(0, 0, fishEyeCanvas.width, fishEyeCanvas.height);
-            const data = imgData.data;
-            const w = fishEyeCanvas.width;
-            const h = fishEyeCanvas.height;
-
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    const dx = x - w / 2;
-                    const dy = y - h / 2;
-                    const r = Math.sqrt(dx * dx + dy * dy) / (w / 2);
-                    if (r < 1) {
-                        const nx = Math.round((dx * r) + (w / 2));
-                        const ny = Math.round((dy * r) + (h / 2));
-                        if (nx >= 0 && ny >= 0 && nx < w && ny < h) {
-                            const index = (ny * w + nx) * 4;
-                            const idx = (y * w + x) * 4;
-                            data[idx] = data[index];
-                            data[idx + 1] = data[index + 1];
-                            data[idx + 2] = data[index + 2];
-                            data[idx + 3] = data[index + 3];
-                        }
-                    }
-                }
-            }
-            fishEyeCtx.putImageData(imgData, 0, 0);
-            document.body.style.backgroundImage = `url(${fishEyeCanvas.toDataURL()})`;
-        }
+        const asciiArtContainer = document.getElementById("ascii-art-container");
 
         let playerState = {
             location: "начало",
@@ -178,332 +124,140 @@
         };
 
         const art = {
-            "лаборатория": `
-          +-----------------+
-          |                 |
-          |                 |
-          |\\               /|
-          | \\_ _       _ _/ |
-          |    | |    | |   |
-          +-----------------+
-            `,
-            "коридор": `
-          +-----------------+
-          | \\             / |
-          |    \\       /    |
-          |      +---+      |
-          |      |   |      |
-          |      |   |      |
-          +-----------------+
-            `,
-            "комната отдыха": `
-          +---------------------+
-          |                     |
-          |  []     []     []   |
-          |        _____        |
-          |       |_____|       |
-          |      (_______)      |
-          +---------------------+
-            `,
-            "библиотека": `
-          +---------------------+
-          |        _____  +---+ |
-          | +-+   |_____| |---| |
-          | |  |  |_____| |   | |
-          | |  |   _____  |---| |
-          | |  |  |     | |___| |
-          +---------------------+
-            `,
-            "кухня": `
-          +--------------------+
-          |        []     ___  |
-          |        []    |   | |
-          |              |___| |
-          |   _________  |   | |
-          |  |         | |___| |
-          +--------------------+
-            `,
-            "столовая": `
-          +---------------------+
-          |                     |
-          | |                 | |
-          | |    |---|---|    | |
-          | +--+ |   |   | +--+ |
-          | |  | |---|---| |  | |
-          +---------------------+
-            `,
-            "запасное_помещение": `
-          +---------------------+
-          |       .-----.       |
-          |      /       \\     |
-          |     /         \\    |
-          |    /___________\\   |
-          |                     |
-          +---------------------+
-            `,
-            "комната_тестирования": `
-          +---------------------+
-          |  .-----..-----..   |
-          |  |     | |     |   |
-          |  |_____| |_____|   |
-          |  |     | |     |   |
-          |  |_____| |_____|   |
-          +---------------------+
-            `,
-            "психологический_кабинет": `
-          +--------------------+
-          |        [|]         |
-          | |     [___]        |
-          | |                  |
-          | +--+ +-----+  +--+ |
-          | |  | [_____]  |  | |
-          +--------------------+
-            `,
-            "смотровая": `
-          +---------------------+
-          |                     |
-          |--+     +---+     +--|
-          |  |     |   |     |  |
-          |--+     +---+     +--|
-          |                     |
-          +---------------------+
-            `,
-            "передача": `
-          +---------------------+
-          |                     |
-          |  ___        __      |
-          | |   |      |  |     |
-          | |   |  +---|__|--+  |
-          | |___|  |   |  |  |  |
-          +---------------------+
-            `,
-            "операционная": `
-          +---------------------+
-          |   .---. .---.       |
-          |   |___| |___|       |
-          |              |      |
-          |   .---. .---.|__+---|
-          |   |___| |___||  |   |
-          +---------------------+
-            `,
-            "улица": `
-          +---------------------+
-          |~~  ~~~  / \\    | ~~~|
-          |~~~~ |  /   \\    ~~~~|
-          |~~~~   /     \\   ~~~~|
-          |~~~   /       \\   ~~~|
-          ||    /         \\    ||
-          +---------------------+
-            `
+            "лаборатория": "ASCII-арт лаборатории...",
+            "коридор": "ASCII-арт коридора...",
+            "комната отдыха": "ASCII-арт комнаты отдыха...",
+            // Добавьте остальные ASCII-арты локаций
         };
+
+        const entities = [
+            {
+                name: "Существо",
+                ascii: "ASCII-арт существа...",
+                dialogue: [
+                    "Существо смотрит на вас.",
+                    "Вы чувствуете, как оно проникает в ваши мысли.",
+                    "Оно хочет знать о ваших снах."
+                ]
+            },
+            {
+                name: "Тень",
+                ascii: "ASCII-арт тени...",
+                dialogue: [
+                    "Тень окружает вас.",
+                    "Вы не можете пошевелиться."
+                ]
+            }
+            // Добавьте остальные сущности
+        ];
 
         const locations = {
             "лаборатория": {
-                description: "Вы находитесь в лаборатории. Запах химикатов наполняет воздух.",
+                description: "Вы в лаборатории, окружённой старыми пробирками и странными звуками.",
                 ascii: art["лаборатория"],
                 objects: {}
             },
             "коридор": {
-                description: "Вы в коридоре. Стены покрыты пятнами.",
+                description: "Вы в коридоре, стены покрыты пятнами.",
                 ascii: art["коридор"],
                 objects: {}
             },
-            "комната отдыха": {
-                description: "Вы в комнате отдыха. Здесь есть несколько старых диванов.",
-                ascii: art["комната отдыха"],
-                objects: {}
-            },
-            "библиотека": {
-                description: "Вы в библиотеке. Книги пылятся на полках.",
-                ascii: art["библиотека"],
-                objects: {}
-            },
-            "кухня": {
-                description: "Вы находитесь на кухне. Здесь пусто и холодно.",
-                ascii: art["кухня"],
-                objects: {}
-            },
-            "столовая": {
-                description: "Вы в столовой. Столы накрыты пылью.",
-                ascii: art["столовая"],
-                objects: {}
-            },
-            "запасное_помещение": {
-                description: "Вы в запасном помещении. Здесь темно и тихо.",
-                ascii: art["запасное_помещение"],
-                objects: {}
-            },
-            "комната_тестирования": {
-                description: "Вы в комнате тестирования. Все выглядит странно.",
-                ascii: art["комната_тестирования"],
-                objects: {}
-            },
-            "психологический_кабинет": {
-                description: "Вы в психологическом кабинете. Зеркала окружают вас.",
-                ascii: art["психологический_кабинет"],
-                objects: {}
-            },
-            "смотровая": {
-                description: "Вы в смотровой. Здесь нет окон.",
-                ascii: art["смотровая"],
-                objects: {}
-            },
-            "передача": {
-                description: "Вы в передаче. Место, где осуществляется передача данных.",
-                ascii: art["передача"],
-                objects: {}
-            },
-            "операционная": {
-                description: "Вы в операционной. Стол для операций стоит посреди комнаты.",
-                ascii: art["операционная"],
-                objects: {}
-            },
-            "улица": {
-                description: "Вы на улице. Вокруг шум и суета.",
-                ascii: art["улица"],
-                objects: {}
-            },
-            "начало": {
-                description: "Вы находитесь в начале вашего путешествия.",
-                ascii: "",
-                objects: {}
-            }
+            // Добавьте остальные локации
         };
-
-        function getRandomEntity() {
-            const entities = [
-                {
-                    name: "Существо",
-                    ascii: `
-                      .------.
-                     /  ~ ~  \\
-                    |  /  _  \\ |
-                    | |  / \\  | |
-                     \\ \\___/  /
-                      '-------'
-                    `,
-                    dialogue: [
-                        "Вы не понимаете, что оно говорит.",
-                        "Ваши сны и реальность пересекаются.",
-                        "Скрытые записи о вас..."
-                    ]
-                },
-                {
-                    name: "Тень",
-                    ascii: `
-                      .--.
-                  .--'    '---.
-                .'                '.
-               /                    \\
-              :                      :
-              |                      |
-              :                      :
-               \\                    /
-                '.__              _.'
-                     '---._____.---'
-                    `,
-                    dialogue: [
-                        "Тени обманывают ваш разум.",
-                        "Никто не знает, кто вы на самом деле.",
-                        "У вас есть секреты, которые должны быть раскрыты."
-                    ]
-                },
-                {
-                    name: "Призрак",
-                    ascii: `
-                        .-.
-                       (   )
-                      .-'-'-.
-                    .-         -.
-                  .'             '.
-                  |    О     О    |
-                  |     -     -    |
-                  |      '._.'     |
-                  |               |
-                   '._         _.'
-                      '-.....-'
-                    `,
-                    dialogue: [
-                        "Вы заблудились в своих мыслях.",
-                        "Сколько людей прошло мимо вас?",
-                        "Все ваши страхи становятся реальностью."
-                    ]
-                }
-            ];
-
-            return entities[Math.floor(Math.random() * entities.length)];
-        }
 
         function updateGameText(text) {
             gameText.innerText += text + "\n";
             gameText.scrollTop = gameText.scrollHeight;
-			
         }
 
-        function encounterEntity() {
-            const entity = getRandomEntity();
-            updateGameText(`Вы встретили ${entity.name}:\n${entity.ascii}\n\nЧто вы хотите сделать?`);
-
-            const randomDialogue = entity.dialogue[Math.floor(Math.random() * entity.dialogue.length)];
-            setTimeout(() => {
-                updateGameText(randomDialogue);
-            }, 2000);
+        function displayAsciiArt(asciiArt) {
+            asciiArtContainer.innerText = asciiArt;
         }
-		
-		function displayCommands() {
-		const commands = `
-			Доступные команды:
-			- осмотреть: Описывает текущее местоположение.
-			- идти <место>: Перемещает вас в указанное место.
-			- взять <предмет>: Берет указанный предмет.
-			- встретить: Встречает случайное существо.
-			`;
-			updateGameText(commands);
-		}
+
+        function getRandomEntity() {
+            const chance = Math.random();
+            if (chance <= 0.02) { // Шанс 2% на появление сущности
+                const entity = entities[Math.floor(Math.random() * entities.length)];
+                displayAsciiArt(entity.ascii);
+                updateGameText(`${entity.name} появляется и смотрит на вас.`);
+                startEntityEncounter(entity);
+            } else {
+                displayAsciiArt(locations[playerState.location].ascii);
+            }
+        }
+
+        function startEntityEncounter(entity) {
+            const options = [
+                { text: "Игнорировать", action: () => ignoreEntity(entity) },
+                { text: "Поговорить", action: () => talkToEntity(entity) },
+                { text: "Спрятаться", action: () => hideFromEntity() }
+            ];
+            updateGameText("Что вы будете делать?");
+            options.forEach((option, index) => updateGameText(`${index + 1}) ${option.text}`));
+        }
+
+        function ignoreEntity(entity) {
+            const chance = Math.random();
+            if (chance < 0.5) {
+                updateGameText("Существо начинает приближаться...");
+                if (Math.random() < 0.2) {
+                    updateGameText("Существо нападает и убивает вас.");
+                    restartGame();
+                } else {
+                    updateGameText("Существо передумало и уходит.");
+                    displayAsciiArt(locations[playerState.location].ascii);
+                }
+            } else {
+                updateGameText("Существо решает заговорить с вами.");
+                entityDialogue(entity);
+            }
+        }
+
+        function talkToEntity(entity) {
+            updateGameText("Вы начинаете диалог с существом.");
+            entityDialogue(entity);
+        }
+
+        function hideFromEntity() {
+            if (playerState.location === "коридор") {
+                updateGameText("Здесь негде спрятаться.");
+                ignoreEntity();
+            } else {
+                updateGameText("Вы прячетесь, и существо исчезает.");
+                displayAsciiArt(locations[playerState.location].ascii);
+            }
+        }
+
+        function entityDialogue(entity) {
+            entity.dialogue.forEach(line => updateGameText(line));
+            updateGameText("Напишите ответ (введите 'сон' для продолжения диалога).");
+        }
+
+        function restartGame() {
+            playerState = { location: "начало", inventory: [] };
+            updateGameText("Вы мертвы. Игра начинается заново.");
+            displayAsciiArt("");
+        }
 
         function executeCommand() {
-            const command = inputField.value.toLowerCase().trim();
-            inputField.value = '';
-
+            const command = inputField.value.toLowerCase();
+            inputField.value = "";
             if (command === "осмотреть") {
-                const currentLocation = locations[playerState.location];
-                updateGameText(currentLocation.description);
-                updateGameText(currentLocation.ascii); // Отображение ASCII-арта локации
-            } else if (command.startsWith("идти ")) {
-                const destination = command.split(" ")[1];
-                if (locations[playerState.location].exits[destination]) {
-                    playerState.location = destination;
-                    updateGameText(`Вы направились в ${destination}.`);
-                    const currentLocation = locations[playerState.location];
-                    updateGameText(currentLocation.description);
-                    updateGameText(currentLocation.ascii); // Отображение ASCII-арта новой локации
-                } else {
-                    updateGameText("Вы не можете туда пойти.");
-                }
-            } else if (command.startsWith("взять ")) {
-                const item = command.split(" ")[1];
-                const currentLocation = locations[playerState.location];
-                if (currentLocation.objects[item]) {
-                    playerState.inventory.push(item);
-                    delete currentLocation.objects[item];
-                    updateGameText(`Вы взяли ${item}.`);
-                } else {
-                    updateGameText(`Нет ${item} для взятия.`);
-                }
-            } else if (command === "встретить") {
-                encounterEntity();
+                updateGameText(locations[playerState.location].description);
+                displayAsciiArt(locations[playerState.location].ascii);
+                getRandomEntity();
             } else {
                 updateGameText("Неизвестная команда.");
             }
         }
-		
 
+        startGame();
 
-		
-			// Начальная загрузка
-			updateGameText("Добро пожаловать в Лоботомию Мозга.\n\n" + locations[playerState.location].description);
-			displayCommands(); // Отображение доступных команд
-			loadBackgroundImage("https://images.pexels.com/photos/1333407/pexels-photo-1333407.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
+        function startGame() {
+            updateGameText("Добро пожаловать в Лоботомию Мозга.");
+            updateGameText(locations[playerState.location].description);
+            displayAsciiArt(locations[playerState.location].ascii);
+        }
     </script>
 </body>
 </html>
