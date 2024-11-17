@@ -1,263 +1,75 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Лоботомия Мозга</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400&display=swap');
-        
-        body {
-            background-color: #000000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Pixelify Sans', sans-serif;
-            color: #00ff00;
-            overflow: hidden;
-        }
-
-        #screen-container {
-            position: relative;
-            width: 600px;
-            height: 400px;
-            border-radius: 15px;
-            background-color: #1e1e1e;
-            overflow-y: scroll;
-            padding: 20px;
-            border: 5px solid #3a3a3a;
-            box-shadow: 0 0 20px #000, inset 0 0 10px #000;
-            text-align: center;
-        }
-
-        #screen-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(transparent 25%, rgba(0, 0, 0, 0.2) 50%, transparent 75%);
-            background-size: 100% 5px;
-            opacity: 0.2;
-            pointer-events: none;
-        }
-
-        #game-text {
-            white-space: pre-line;
-            text-align: center;
-            line-height: 1.5;
-            color: #00ff00;
-            font-size: 16px;
-        }
-
-        .ascii-art {
-            font-family: monospace;
-            font-size: 14px;
-            white-space: pre;
-            line-height: 1.2;
-        }
-
-        #command-input {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 15px;
-        }
-
-        #input {
-            width: 580px;
-            font-size: 16px;
-            padding: 8px;
-            border: 2px solid #3a3a3a;
-            background-color: #111;
-            color: #00ff00;
-            margin-bottom: 10px;
-        }
-
-        #submit-button {
-            font-size: 14px;
-            padding: 10px;
-            width: 100px;
-            background-color: #3a3a3a;
-            color: #00ff00;
-            border: 2px solid #555;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        #submit-button:hover {
-            background-color: #555555;
-        }
-
-        #ascii-art-container {
-            font-family: monospace;
-            text-align: center;
-            white-space: pre;
-            font-size: 14px;
-            color: #00ff00;
-            margin-top: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Лоботомия разума</title>
+  <style>
+    body {
+      font-family: monospace;
+      background-color: black;
+      color: white;
+      text-align: center;
+    }
+    #screen-container {
+      width: 80%;
+      margin: 0 auto;
+      padding: 10px;
+      border: 2px solid white;
+      height: 60vh;
+      overflow-y: scroll;
+    }
+    #ascii-art-container {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 14px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 5px;
+      font-family: monospace;
+      background-color: black;
+      color: white;
+      border: 1px solid white;
+    }
+    button {
+      padding: 5px 10px;
+      background-color: black;
+      color: white;
+      border: 1px solid white;
+    }
+    #entity-ascii-container {
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px solid #fff;
+      text-align: center;
+      white-space: pre-wrap;
+      font-size: 14px;
+      font-family: "Courier New", Courier, monospace;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #111;
+    }
+  </style>
 </head>
 <body>
-    <div id="screen-container">
-        <div id="game-text"></div>
-        <div id="ascii-art-container"></div>
-    </div>
 
-    <div id="command-input">
-        <input type="text" id="input" placeholder="Введите команду..." autofocus />
-        <button id="submit-button" onclick="executeCommand()">Отправить</button>
-    </div>
+  <h1>Текстовый квест: Лоботомия разума</h1>
+  
+  <div id="screen-container">
+    <div id="info-window"></div>
+    <div id="ascii-art-container"></div>
+  </div>
 
-    <script>
-        const gameText = document.getElementById("game-text");
-        const inputField = document.getElementById("input");
-        const asciiArtContainer = document.getElementById("ascii-art-container");
+  <input type="text" id="command-input" placeholder="Введите команду..." autocomplete="off">
+  <button onclick="processCommand()">Отправить</button>
 
-        let playerState = {
-            location: "начало",
-            inventory: []
-        };
+  <!-- Новый контейнер для ASCII-арта сущностей -->
+  <div id="entity-ascii-container"></div>
 
-        const art = {
-            "лаборатория": "ASCII-арт лаборатории...",
-            "коридор": "ASCII-арт коридора...",
-            "комната отдыха": "ASCII-арт комнаты отдыха...",
-            // Добавьте остальные ASCII-арты локаций
-        };
-
-        const entities = [
-            {
-                name: "Существо",
-                ascii: "ASCII-арт существа...",
-                dialogue: [
-                    "Существо смотрит на вас.",
-                    "Вы чувствуете, как оно проникает в ваши мысли.",
-                    "Оно хочет знать о ваших снах."
-                ]
-            },
-            {
-                name: "Тень",
-                ascii: "ASCII-арт тени...",
-                dialogue: [
-                    "Тень окружает вас.",
-                    "Вы не можете пошевелиться."
-                ]
-            }
-            // Добавьте остальные сущности
-        ];
-
-        const locations = {
-            "лаборатория": {
-                description: "Вы в лаборатории, окружённой старыми пробирками и странными звуками.",
-                ascii: art["лаборатория"],
-                objects: {}
-            },
-            "коридор": {
-                description: "Вы в коридоре, стены покрыты пятнами.",
-                ascii: art["коридор"],
-                objects: {}
-            },
-            // Добавьте остальные локации
-        };
-
-        function updateGameText(text) {
-            gameText.innerText += text + "\n";
-            gameText.scrollTop = gameText.scrollHeight;
-        }
-
-        function displayAsciiArt(asciiArt) {
-            asciiArtContainer.innerText = asciiArt;
-        }
-
-        function getRandomEntity() {
-            const chance = Math.random();
-            if (chance <= 0.02) { // Шанс 2% на появление сущности
-                const entity = entities[Math.floor(Math.random() * entities.length)];
-                displayAsciiArt(entity.ascii);
-                updateGameText(`${entity.name} появляется и смотрит на вас.`);
-                startEntityEncounter(entity);
-            } else {
-                displayAsciiArt(locations[playerState.location].ascii);
-            }
-        }
-
-        function startEntityEncounter(entity) {
-            const options = [
-                { text: "Игнорировать", action: () => ignoreEntity(entity) },
-                { text: "Поговорить", action: () => talkToEntity(entity) },
-                { text: "Спрятаться", action: () => hideFromEntity() }
-            ];
-            updateGameText("Что вы будете делать?");
-            options.forEach((option, index) => updateGameText(`${index + 1}) ${option.text}`));
-        }
-
-        function ignoreEntity(entity) {
-            const chance = Math.random();
-            if (chance < 0.5) {
-                updateGameText("Существо начинает приближаться...");
-                if (Math.random() < 0.2) {
-                    updateGameText("Существо нападает и убивает вас.");
-                    restartGame();
-                } else {
-                    updateGameText("Существо передумало и уходит.");
-                    displayAsciiArt(locations[playerState.location].ascii);
-                }
-            } else {
-                updateGameText("Существо решает заговорить с вами.");
-                entityDialogue(entity);
-            }
-        }
-
-        function talkToEntity(entity) {
-            updateGameText("Вы начинаете диалог с существом.");
-            entityDialogue(entity);
-        }
-
-        function hideFromEntity() {
-            if (playerState.location === "коридор") {
-                updateGameText("Здесь негде спрятаться.");
-                ignoreEntity();
-            } else {
-                updateGameText("Вы прячетесь, и существо исчезает.");
-                displayAsciiArt(locations[playerState.location].ascii);
-            }
-        }
-
-        function entityDialogue(entity) {
-            entity.dialogue.forEach(line => updateGameText(line));
-            updateGameText("Напишите ответ (введите 'сон' для продолжения диалога).");
-        }
-
-        function restartGame() {
-            playerState = { location: "начало", inventory: [] };
-            updateGameText("Вы мертвы. Игра начинается заново.");
-            displayAsciiArt("");
-        }
-
-        function executeCommand() {
-            const command = inputField.value.toLowerCase();
-            inputField.value = "";
-            if (command === "осмотреть") {
-                updateGameText(locations[playerState.location].description);
-                displayAsciiArt(locations[playerState.location].ascii);
-                getRandomEntity();
-            } else {
-                updateGameText("Неизвестная команда.");
-            }
-        }
-
-        startGame();
-
-        function startGame() {
-            updateGameText("Добро пожаловать в Лоботомию Мозга.");
-            updateGameText(locations[playerState.location].description);
-            displayAsciiArt(locations[playerState.location].ascii);
-        }
-    </script>
+  <script src="game.js"></script>
 </body>
 </html>
