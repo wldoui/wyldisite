@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survival Tools</title>
+    <style>
+        body {
+			background-image: url("stools/blocks/background.png");
+			background-color: black;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #ffffff;
+        }
+
+        header {
+            background-color: #333;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #6aa84f;
+        }
+
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #6aa84f;
+            color: #000;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .post {
+            background-color: #444;
+            border: 2px solid #6aa84f;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .post h2 {
+            color: #6aa84f;
+        }
+
+        .post p {
+            line-height: 1.20;
+        }
+
+        footer {
+            background-color: #333;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+        }
+
+        footer a {
+            color: #6aa84f;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Survival Tools</div>
+        <nav>
+			<a href="survivaltools.html">Главное</a>
+			<a href="survivaltools_teasers.html">Тизеры</a>
+            <a href="survivaltools_forum.html">Форум</a>
+        </nav>
+    </header>
+
+    <main class="content">
+        <div class="post">
+            <h2>О проекте</h2>
+            <p>Эта главная страница проекта под названием "Surival Tools", сокращённо - стулс.</p>
+			<p>SurvivalTools - Модификация для Minecraft <b>(Forge 1.20.4)</b> добавляющая реалистичную многоступенчатую систему выживания и разные инструменты, а так же ресурсы, полностью самописная </p>
+        </div>
+        <div class="post" id="forum">
+            <h2>Форум</h2>
+            <p>Место для общения по теме стулса</p>
+        </div>
+		<div class="post" id="links">
+            <h2>Ссылки</h2>
+            <p>Ссылки на дискорд канал, ютуб ролики другие возможные сообщества</p>
+        </div>
+        <div class="post" id="teasers">
+            <h2>Спойлеры</h2>
+            <p>Спойлеры того что будет в будущем проекте</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>2024-2025 Survival Tools | <a href="https://discord.gg/muPhw3EzSn">Связаться с нами</a></p>
+    </footer>
+</body>
+<script>
+	let posX = 0;
+
+	function moveBackground() {
+		posX++;
+		document.body.style.backgroundPosition = posX + 'px 0';
+	}
+
+	setInterval(moveBackground, 50);
+</script>
+</html>

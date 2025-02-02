@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survival Tools</title>
+    <style>
+        body {
+			background-image: url("stools/blocks/background.png");
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #ffffff;
+        }
+
+        header {
+            background-color: #333;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #6aa84f;
+        }
+
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #6aa84f;
+            color: #000;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .post {
+            background-color: #444;
+            border: 2px solid #6aa84f;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .post h2 {
+            color: #6aa84f;
+        }
+
+        .post p {
+            line-height: 1.20;
+        }
+
+        footer {
+            background-color: #333;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+        }
+
+        footer a {
+            color: #6aa84f;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Survival Tools</div>
+        <nav>
+			<a href="survivaltools.html">Главное</a>
+			<a href="survivaltools_teasers.html">Тизеры</a>
+            <a href="survivaltools_forum.html">Форум</a>
+        </nav>
+    </header>
+
+	<div id="teasers" class="content">
+		<div class="post">
+			<h2>Возможность стоять на мобах, коллизия с сущностями</h2>
+			<img src="stools\teaser1.png" alt="png">
+			<p>Теперь такая коллизия <b>только у игроков.</b></p>
+		</div>
+		<div class="post">
+			<h2>Изменённый размер игроков</h2>
+			<img src="stools\teaser2.png" alt="png">
+			<p>У игроков можно менять размер. При спавне он будет всегда случайным (от 165 до 200), от этого также зависит и коллизия.</p>
+		</div>
+		<div class="post">
+			<h2>Удалены ненужыные языки</h2>
+			<img src="stools\teaser3.png" alt="png" style="width: 99%; height: auto;">
+			<p>Благодаря этому запуск происходит быстрее.</p>
+		</div>
+		<div class="post">
+			<h2>Реалистичное первое лицо с телом</h2>
+			<img src="stools\teaser4.png" alt="png" style="width: 95%; height: auto;">
+			<p>Таким образом не придётся скачивать другие моды ведь эта функция будет в оригинальном стулс.</p>
+		</div>
+	</div>
+	<footer>
+        <p>2024-2025 Survival Tools | <a href="https://discord.gg/muPhw3EzSn">Связаться с нами</a></p>
+    </footer>
+</body>
+<script>
+	let posX = 0;
+
+	function moveBackground() {
+		posX++;
+		document.body.style.backgroundPosition = posX + 'px 0';
+	}
+
+	setInterval(moveBackground, 50);
+</script>
+</html>

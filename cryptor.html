@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexadecimal Shift Encryption Tool</title>
+    <style>
+        /* Общий стиль */
+        body {
+            background-color: #000; /* Чёрный фон */
+            color: #00ff00; /* Зелёный текст */
+            font-family: Consolas, monospace; /* Шрифт как в командной строке */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Основной контейнер */
+        #container {
+            display: flex;
+            width: 100%;
+        }
+
+        /* Левая часть для ввода */
+        #inputSection {
+            flex: 1;
+            padding: 20px;
+        }
+
+        #inputSection h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        #inputSection label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #inputSection input, #inputSection button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #00ff00;
+            background-color: #000;
+            color: #00ff00;
+            font-family: Consolas, monospace;
+            font-size: 16px;
+        }
+
+        #inputSection button {
+            cursor: pointer;
+        }
+
+        /* Правая часть для вывода */
+        #outputSection {
+            width: 50%;
+            border-left: 1px solid #00ff00;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #resultArea {
+            word-wrap: break-word;
+            flex: 1;
+            background-color: #000;
+            border: 1px solid #00ff00;
+            padding: 10px;
+            overflow-y: scroll; /* Скроллинг */
+            height: 400px; /* Фиксированная высота */
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- Ввод -->
+        <div id="inputSection">
+            <h1>Hexadecimal Shift Encryption Tool</h1>
+            <label for="textInput">Enter text:</label>
+            <input type="text" id="textInput" placeholder="Enter text here...">
+            
+            <label for="shiftValue">Shift Value:</label>
+            <input type="number" id="shiftValue" placeholder="Enter shift value...">
+            
+            <button onclick="handleEncrypt()">Encrypt</button>
+            <button onclick="handleDecrypt()">Decrypt</button>
+        </div>
+
+        <!-- Вывод -->
+        <div id="outputSection">
+            <div id="resultArea"></div>
+        </div>
+    </div>
+
+<script>
+// Функция шифрования с использованием Hexadecimal и сдвига
+function hexShiftEncrypt(plainText, shift) {
+    let hexString = '';
+    for (let i = 0; i < plainText.length; i++) {
+        let charCode = plainText.charCodeAt(i);
+        let shiftedCharCode = (charCode + shift) % 65536; // Сдвиг с учётом 65536 возможных значений (UTF-16)
+        hexString += shiftedCharCode.toString(16).padStart(4, '0'); // Преобразуем в Hex, 4 символа для каждого кода
+    }
+    return hexString.toUpperCase(); // Возвращаем в верхнем регистре
+}
+
+// Функция дешифрования с использованием Hexadecimal и сдвига
+function hexShiftDecrypt(encryptedText, shift) {
+    let decryptedText = '';
+    for (let i = 0; i < encryptedText.length; i += 4) { // Каждый символ занимает 4 символа в hex
+        let hexCode = encryptedText.substr(i, 4);
+        let charCode = parseInt(hexCode, 16);
+        let originalCharCode = (charCode - shift + 65536) % 65536; // Обратный сдвиг с учётом 65536 возможных значений
+        decryptedText += String.fromCharCode(originalCharCode);
+    }
+    return decryptedText;
+}
+
+// Обработчик шифрования
+function handleEncrypt() {
+    let text = document.getElementById("textInput").value;
+    let shiftValue = parseInt(document.getElementById("shiftValue").value);
+
+    if (text && !isNaN(shiftValue)) {
+        let encryptedMessage = hexShiftEncrypt(text, shiftValue);
+        document.getElementById("resultArea").innerText = "Encrypted Message (Hex): " + encryptedMessage;
+    } else {
+        alert("Заполните все поля.");
+    }
+}
+
+// Обработчик дешифрования
+function handleDecrypt() {
+    let text = document.getElementById("textInput").value;
+    let shiftValue = parseInt(document.getElementById("shiftValue").value);
+
+    if (text && !isNaN(shiftValue)) {
+        let decryptedMessage = hexShiftDecrypt(text, shiftValue);
+        document.getElementById("resultArea").innerText = "Decrypted Message: " + decryptedMessage;
+    } else {
+        alert("Заполните все поля.");
+    }
+}
+
+</script>
+</body>
+</html>

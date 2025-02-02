@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Лоботомия разума</title>
+  <style>
+    body {
+      font-family: monospace;
+      background-color: black;
+      color: white;
+      text-align: center;
+    }
+    #screen-container {
+      width: 80%;
+      margin: 0 auto;
+      padding: 10px;
+      border: 2px solid white;
+      height: 60vh;
+      overflow-y: scroll;
+    }
+    #ascii-art-container {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 14px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 5px;
+      font-family: monospace;
+      background-color: black;
+      color: white;
+      border: 1px solid white;
+    }
+    button {
+      padding: 5px 10px;
+      background-color: black;
+      color: white;
+      border: 1px solid white;
+    }
+    #entity-ascii-container {
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px solid #fff;
+      text-align: center;
+      white-space: pre-wrap;
+      font-size: 14px;
+      font-family: "Courier New", Courier, monospace;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #111;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Текстовый квест: Лоботомия разума</h1>
+  
+  <div id="screen-container">
+    <div id="info-window"></div>
+    <div id="ascii-art-container"></div>
+  </div>
+
+  <input type="text" id="command-input" placeholder="Введите команду..." autocomplete="off">
+  <button onclick="processCommand()">Отправить</button>
+
+  <!-- Новый контейнер для ASCII-арта сущностей -->
+  <div id="entity-ascii-container"></div>
+
+  <script src="game.js"></script>
+</body>
+</html>
