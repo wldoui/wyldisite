@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT API Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        #container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 4px solid #007BFF;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>ChatGPT API</h1>
+        <textarea id="prompt" placeholder="Введите ваш запрос..."></textarea>
+        <button id="submit">Отправить</button>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        const API_KEY = "ОЙ БОЖЕЕЕ ХВАТИТ ДЕАНОНИТЬ ТОКЕНЫ ФУФЛЫГИ ГОНДОБЛЯСИКИ"; // свой используйте бож
+        const API_URL = "https://api.openai.com/v1/chat/completions";
+
+        document.getElementById("submit").addEventListener("click", async () => {
+            const prompt = document.getElementById("prompt").value;
+            const responseBox = document.getElementById("response");
+            responseBox.textContent = "Загрузка...";
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{ role: "user", content: prompt }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ошибка при запросе к API");
+                }
+
+                const data = await response.json();
+                responseBox.textContent = data.choices[0].message.content;
+            } catch (error) {
+                responseBox.textContent = `Ошибка: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
