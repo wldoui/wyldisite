@@ -1,6 +1,6 @@
 # wyldisite
 ### НЕ СПРАШИВАЙТЕ ПОЧЕМУ ТУТ ТАК ЗАСРАНО ФАЙЛАМИ И ПРОМПТАМИ ТАК НУЖНО ЧЕСТНО!
-[ahhhh](https://wldoui.github.io/wyldisite/)
+[ГЛАВНАЯ СТРАНИЦА](https://wldoui.github.io/wyldisite/)
 
 [game) не рабочая))](https://wldoui.github.io/wyldisite/game.html)
 

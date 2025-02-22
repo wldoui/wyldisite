@@ -1,75 +1,155 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Лоботомия разума</title>
-  <style>
-    body {
-      font-family: monospace;
-      background-color: black;
-      color: white;
-      text-align: center;
-    }
-    #screen-container {
-      width: 80%;
-      margin: 0 auto;
-      padding: 10px;
-      border: 2px solid white;
-      height: 60vh;
-      overflow-y: scroll;
-    }
-    #ascii-art-container {
-      font-family: "Courier New", Courier, monospace;
-      font-size: 14px;
-      margin-top: 20px;
-      white-space: pre-wrap;
-      text-align: center;
-    }
-    input[type="text"] {
-      width: 80%;
-      padding: 5px;
-      font-family: monospace;
-      background-color: black;
-      color: white;
-      border: 1px solid white;
-    }
-    button {
-      padding: 5px 10px;
-      background-color: black;
-      color: white;
-      border: 1px solid white;
-    }
-    #entity-ascii-container {
-      margin-top: 20px;
-      padding: 10px;
-      border: 2px solid #fff;
-      text-align: center;
-      white-space: pre-wrap;
-      font-size: 14px;
-      font-family: "Courier New", Courier, monospace;
-      max-width: 80%;
-      margin-left: auto;
-      margin-right: auto;
-      background-color: #111;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лоботомия мозга</title>
+    <style>
+        body {
+            background-color: black;
+            color: lime;
+            font-family: monospace;
+        }
+        #console {
+            width: 600px;
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid lime;
+            padding: 10px;
+            white-space: pre-wrap;
+        }
+        #ascii-art {
+            font-family: monospace;
+            white-space: pre;
+            margin-top: 10px;
+            color: white;
+        }
+        input {
+            width: 600px;
+            background-color: black;
+            color: lime;
+            border: 1px solid lime;
+            font-family: monospace;
+        }
+    </style>
 </head>
 <body>
+    <div id="ascii-art"></div>
+    <div id="console"></div>
+    <input type="text" id="command" autofocus>
+    
+    <script>
+        const locations = {
+            "лаборатория": `
++-----------------+
+|                 |
+|                 |
+|\               /|
+| \_ _       _ _/ |
+|    | |    | |   |
++-----------------+`,
+            "коридор": `
++-----------------+
+| \             / |
+|    \       /    |
+|      +---+      |
+|      |   |      |
+|      |   |      |
++-----------------+`,
+            "комната отдыха": `
++---------------------+
+|                     |
+|  []     []     []   |
+|        _____        |
+|       |_____|       |
+|      (_______)      |
++---------------------+`
+        };
 
-  <h1>Текстовый квест: Лоботомия разума</h1>
-  
-  <div id="screen-container">
-    <div id="info-window"></div>
-    <div id="ascii-art-container"></div>
-  </div>
+        const entities = [
+            { name: "Существо", ascii: `
+  .------.
+ /  ~ ~  \\
+|  /  _  \ |
+| |  / \  | |
+ \ \___/  /
+  '-------'`,
+              dialogue: [
+                  "Вы не понимаете, что оно говорит.",
+                  "Ваши сны и реальность пересекаются.",
+                  "Скрытые записи о вас..."
+              ]
+            }
+        ];
 
-  <input type="text" id="command-input" placeholder="Введите команду..." autocomplete="off">
-  <button onclick="processCommand()">Отправить</button>
+        let inventory = [];
+        let currentLocation = "лаборатория";
+        let entityPresent = false;
+        let currentEntity = null;
 
-  <!-- Новый контейнер для ASCII-арта сущностей -->
-  <div id="entity-ascii-container"></div>
+        function updateConsole(message) {
+            document.getElementById("console").innerText += "\n" + message;
+        }
 
-  <script src="game.js"></script>
+        function updateAscii() {
+            document.getElementById("ascii-art").innerText = entityPresent ? currentEntity.ascii : locations[currentLocation];
+        }
+
+        function processCommand(command) {
+            let parts = command.toLowerCase().split(" ");
+            let action = parts[0];
+            let target = parts.slice(1).join(" ");
+            
+            if (entityPresent) {
+                if (action === "говорить") {
+                    let response = currentEntity.dialogue[Math.floor(Math.random() * currentEntity.dialogue.length)];
+                    updateConsole(response);
+                } else if (action === "игнорировать") {
+                    if (Math.random() < 0.5) {
+                        updateConsole("Существо исчезло.");
+                        entityPresent = false;
+                    } else {
+                        updateConsole("Существо наблюдает за вами.");
+                    }
+                }
+                updateAscii();
+                return;
+            }
+
+            if (action === "осмотреть") {
+                if (target in locations) {
+                    updateConsole("Вы осматриваете: " + target);
+                } else {
+                    updateConsole("Здесь ничего интересного.");
+                }
+            } else if (action === "идти") {
+                if (target in locations) {
+                    currentLocation = target;
+                    updateConsole("Вы переместились в: " + target);
+                    if (Math.random() < 0.02) {
+                        entityPresent = true;
+                        currentEntity = entities[Math.floor(Math.random() * entities.length)];
+                        updateConsole("Вы видите нечто... Оно смотрит на вас.");
+                    }
+                } else {
+                    updateConsole("Вы не можете туда пойти.");
+                }
+            } else {
+                updateConsole("Неизвестная команда.");
+            }
+            updateAscii();
+        }
+
+        document.getElementById("command").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                let input = event.target.value;
+                event.target.value = "";
+                updateConsole("> " + input);
+                processCommand(input);
+            }
+        });
+
+        updateAscii();
+    </script>
 </body>
 </html>

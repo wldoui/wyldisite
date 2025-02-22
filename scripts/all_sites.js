@@ -14,7 +14,7 @@ var all_sites = [
 	  "catalog": "convertors",
 	  "hide": false,
 	  "tags": [
-		"convertor", "webp", "convertator", "png", "jpg", "convert"
+		"convertor", "webp", "convertator", "png", "jpg", "convert", "converter", "конвертор"
 	  ]
 	}
 ]

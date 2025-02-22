@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRAIN LOBOTOMY MEGA GAME😁</title>
+    <style>
+		@font-face {
+			font-family: 'IBMFont';
+			src: url(fonts/3270-Regular.ttf) format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}	
+		body {
+            background-color: rgb(4,4,4);
+		}
+		
+        #main_container {
+            display: flex;
+            justify-content: space-between; 
+            align-items: flex-start; 
+            padding: 1px;
+        }
+		
+        #console{
+            width: 600px;
+            height: 600px;
+            border: 2px solid lime; 
+            padding: 20px; 
+            box-sizing: border-box;
+            margin: 40px;
+			margin-left: 200px;
+			overflow: scroll;
+        }
+		
+		#ascii-art {
+            width: 600px; 
+            height: 600px; 
+            border: 2px solid lime; 
+            padding: 40px; 
+            box-sizing: border-box;
+            margin: 40px;
+			margin-right: 200px;
+			font-family: 'IBMFont', sans-serif;
+        }
+      
+        #console p {
+            color: lime;
+            font-family: sans-serif;
+			font=size: 10px;
+            text-align: center;
+			font-family: 'IBMFont', sans-serif;			
+        }
+       
+        #ascii-art pre {
+            color: lime;
+            font-family: sans-serif;
+            text-align: center;
+			font-size:  35px;
+			line-height: 1;
+			font-family: 'IBMFont', sans-serif;
+			center: auto;
+			margin-top: 150px;
+        }
+		
+		#command-input {
+			padding: 5px 10px;
+			font-size: 16px;
+			border: 2px solid lime;
+			background-color: black;
+			color: lime;
+			transition: background-color 0.3s ease;
+			font-family: 'IBMFont', sans-serif;
+			font-size: 15px;
+			width: 170px;
+	    }
+		
+		button {
+			background-color: lime;
+			color: black;
+			font-family: 'IBMFont', sans-serif;
+			font-size: 15px;
+		}
+		
+        button:hover {
+            background-color: #018D04;
+        }
+    </style>
+</head>
+<body>
+    <div id="main_container">
+        <div id="console"><center><p>What Im speak</p></center></div>
+        <div id="ascii-art"><pre>What Im see</pre></div>
+    </div>
+	<center>
+		<div id="input-container">
+			<input type="text" id="command-input">
+			<button onclick="executeCommand()">Ввод</button>
+		</div>
+	</center>
+</body>
+<script>
+
+/*==============================Константы==============================*/
+
+let arts = [
+	{
+		name:"лаборатория",
+			ascii:
+			  `
++-----------------+
+|                 |
+|                 |
+|\\               /|
+|  \\ _ _____ _ /  |
+|   | |     | |   |
++-----------------+
+			  `,
+		description:"Ты стоишь в душной лаборатории, где воздух пахнет химическими реактивами и разлагающимся телом. Пол покрыт пятнами, а стены искривлены, словно время здесь не имеет силы. На столах — полуразложившиеся образцы и странные инструменты, чьи назначения ты не в силах понять. Мрак проникает во все уголки этого места, и единственное, что слышно, — это слабое тиканье старого механизма.",
+		items: ["пробирка", "колба"]
+	},
+	
+	{
+		name:"коридор",
+			ascii:
+				`
++-----------------+
+| \\             / |
+|    \\       /    |
+|      +---+      |
+|      |   |      |
+|      |   |      |
++-----------------+
+				`,
+		description:"",
+		items: [""]
+	},
+	
+	{
+		name:"комната-отдыха",
+			ascii:
+				`
++---------------------+
+|                     |
+|  []     []     []   |
+|        _____        |
+|       |_____|       |
+|      (_______)      |
++---------------------+
+				`,
+		description:"",
+		items: ["ткань"]
+	},
+	
+	{
+		name:"библиотека",
+			ascii:
+				`
++---------------------+
+|        _____  +---+ |
+| +--+  |_____| |---| |
+| |  |  |_____| |   | |
+| |  |   _____  |---| |
+| |  |  |     | |___| |
++---------------------+
+				`,
+		description:"библа)",
+		items: ["записки", "книга"]
+	},
+	
+	{
+		name:"кухня",
+			ascii:
+				`
++--------------------+
+|        []     ___  |
+|        []    |   | |
+|              |___| |
+|   _________  |   | |
+|  |         | |___| |
++--------------------+
+				`,
+		description:"",
+		items: ["нож"]
+	},
+	{
+		name:"столовая",
+			ascii:
+				`
++---------------------+
+|                     |
+| |                 | |
+| |    |---|---|    | |
+| +--+ |   |   | +--+ |
+| |  | |---|---| |  | |
++---------------------+
+				`,
+		description:"",
+		items: ["тарелка", "вилка"]
+	},
+	{
+		name:"запасное-помещение",
+			ascii:
+				`
++---------------------+
+|       .-----.       |
+|      /       \\      |
+|     /         \\     |
+|    /___________\\    |
+|                     |
++---------------------+
+				`,
+		description:"",
+		items: [""]
+	},
+	{
+		name:"комната-тестирования",
+			ascii:
+				`
++---------------------+
+|  .-----. .-----.    |
+|  |     | |     |    |
+|  |_____| |_____|    |
+|  |     | |     |    |
+|  |_____| |_____|    |
++---------------------+
+				`,
+		description:"",
+		items: [""]
+	},
+	{
+		name:"психологический-кабинет",
+			ascii:
+				`
++--------------------+
+|        [|]         |
+| |     [___]        |
+| |                  |
+| +--+ +-----+  +--+ |
+| |  | [_____]  |  | |
++--------------------+
+				`,
+		description:"",
+		items: ["блокнот"]
+	},
+	{
+		name:"смотровая",
+			ascii:
+				`
++---------------------+
+|                     |
+|--+     +---+     +--|
+|  |     |   |     |  |
+|--+     +---+     +--|
+|                     |
++---------------------+
+				`,
+		description:"",
+		items: [""]
+	},	
+	{
+		name:"передача",
+			ascii:
+				`
++---------------------+
+|                     |
+|  ___        __      |
+| |   |      |  |     |
+| |   |  +---|__|--+  |
+| |___|  |   |  |  |  |
++---------------------+
+				`,
+		description:"",
+		items: ["радио"]
+	},
+	{
+		name:"операционная",
+			ascii:
+				`
++---------------------+
+|   .---. .---.       |
+|   |___| |___|       |
+|              |      |
+|   .---. .---.|__+---|
+|   |___| |___||  |   |
++---------------------+
+				`,
+		description:"",
+		items: ["скальпель","игла"]
+	},
+	{
+		name:"улица",
+			ascii:
+				`
++---------------------+
+|~~  ~~~  / \\    | ~~~|
+|~~~~ |  /   \\    ~~~~|
+|~~~~   /     \\   ~~~~|
+|~~~   /       \\   ~~~|
+||    /         \\    ||
++---------------------+
+				`,
+		description:"",
+		items: ["ветка"]
+	},
+	{
+		name:"камера-пыток",
+			ascii:
+				`
++---------------------+
+|(*)        \\./       |
+| :   /\\    *  /\\     |
+| |  /  \\   | /  \\    |
+| " /    \\   /    \\   |
+|  /      \\ /      \\  |
+|  *******   ******   |
++---------------------+
+				`,
+		description:"",
+		items: ["дробитель","цепь"]
+	},
+	{
+		name:"тёмный-подвал",
+			ascii:
+				`
++---------------------+
+|    +---+       +    |
+|  _______      +=+   |
+| |       |      +    |
+| |_______| +--+      |
+|   /   \\   |  |      |
++---------------------+
+				`,
+		description:"",
+		items: ["топор"]
+	},
+	{
+		name:"лаборатория-клонирования",
+			ascii:
+				`
++---------------------+
+|       __ & __       |
+|     []  [*]  []     |
+|      [_______]      |
+|       |     |       |
+|      [_______]      |
++---------------------+
+				`,
+		description:"",
+		items: ["капсула"]
+	},
+	{
+		name:"кабинет-гипноза",
+			ascii:
+				`
++---------------------+
+|     * | *    |__&__||
+|     [___]      |"|  |
+|    |     |     |"|  |
+|   [_______]    |"|  |
+|                |"|  |
++---------------------+
+				`,
+		description:"",
+		items: ["часы"]
+	},
+	{
+		name:"комната-снов",
+			ascii:
+				`
++---------------------+
+| You need to wake up |
+| ~  ~   ~   ~  ~ ~~  |
+|~  ~~ ~ ~~   ~~  ~ ~ |
+| ~ ~ ~ ~ ~ ~ ~  ~ ~  |
+|_____________________|
++---------------------+
+				`,
+		description:"",
+		items: ["записка"]
+	},
+	{
+		name:"заброшенная-часовня",
+			ascii:
+				`
++---------------------+
+|                     |
+|     /\\      /\\      |
+|    /  \\    /  \\     |
+|   /____\\  /____\\    |
+|                     |
++---------------------+
+				`,
+		description:"",
+		items: ["отвёртка"]
+	}
+];
+		
+let entities = [
+  {
+    name: "Поедатель",
+    ascii:
+	`
+      .------.
+     /  ~ ~  \\
+    |  /  _  \\ |
+    | |  / \\  | |
+     \\ \\___/  /
+      '-------'
+    `,
+    dialogue: [
+      "Вы не понимаете, что оно говорит.",
+      "Скрытые записи о вас..."
+    ]
+  },
+  {
+    name: "Тень",
+    ascii:
+	`
+			  .--.
+		  .--'    '---.
+		.'                '.
+	   /                    \\
+	  :                      :
+	  |                      |
+	  :                      :
+	   \\                    /
+		'.__              _.'
+			 '---._____.---'
+    `,
+    dialogue: [
+      "Оно следует за вами в темноте.",
+      "Шёпот в ночи..."
+    ]
+  },
+  {
+    name: "Огорчённый",
+	ascii: 
+	`
+		  .-""""""-.
+		.'          '.
+	   /   O      O   \\
+	  :           \    :
+	  |                |   
+	  :    .------.    :
+	   \\  '        '  /
+		'.          .'
+		  '-......-'
+	`,
+    dialogue: [
+      "Вы не пройдёте без разрешения.",
+      "Защитник тайн..."
+    ]
+  },
+  {
+    name: "Призрак",
+	ascii: 
+	`
+			.-.
+		   (   )
+		  .-'-'-.
+		.-         -.
+	  .'             '.
+	  |    О     О    |
+	  |     -     -    |
+	  |      '._.'     |
+	  |               |
+	   '._         _.'
+		  '-.....-'
+	`,
+    dialogue: [
+      "Его голос эхом разносится по коридорам.",
+      "Потерянные души..."
+    ]
+  }
+];
+
+const playerStart = "Вы медленно приходите в сознание, ощущая холод и сырость под спиной. Открыв глаза, вы видите над собой тусклый свет лампы, который едва разгоняет окружающую тьму. Вокруг вас — заброшенная лаборатория. Стеллажи, когда-то полные ржавых пробирок и мутных жидкостей, теперь пусты, и только эхо ваших шагов нарушает тишину. Воздух наполнен резким запахом химикатов, который проникает в легкие, вызывая головокружение. \n \n Команды: Осмотреть, Использовать, Взять, Идти, Помощь\n\nПримеры: осмотреть лаборатория, взять тяжёлая-цепь"
+
+/*==============================Функции==============================*/
+
+let currentLocation = "лаборатория";	
+
+
+function executeCommand() {
+	let input = document.getElementById('command-input').value.toLowerCase();
+	let words = input.split(' ');
+	let command = words[0];
+	let consoleDiv = document.getElementById('console');
+
+	if (command === "осмотреть") {
+		if (words[1] === currentLocation) {
+			consoleDiv.innerHTML += `<center><p>${getDescriptionByName(currentLocation)}</p></center>`;
+		}
+		else {
+			if (words[1] === undefined || words[1] === "") {
+				consoleDiv.innerHTML += `<center><p>Неизвестная команда.</p></center>`;
+			}
+			else
+			{
+				consoleDiv.innerHTML += `<center><p>Вы не можете осмотреть "${words[1]}" из "${currentLocation}".</p></center>`;
+			}
+		}
+	} else if (command === "идти" && words[1]) {
+		let newLocation = words[1];
+		changeLocation(newLocation);
+	} else if (command === "взять" && words[1]) {
+		let item = words[1];
+		let currentItems = arts.find(loc => loc.name === currentLocation).items;
+		if (currentItems.includes(item)) {
+			consoleDiv.innerHTML += `<center><p>Вы взяли ${item}.</p></center>`;
+		} else {
+			consoleDiv.innerHTML += `<center><p>Здесь нет ${item}</p></center>`;
+		}
+	} else {
+		consoleDiv.innerHTML += `<center><p>Неизвестная команда.</p></center>`;
+	}
+}
+
+
+
+console.log(getAsciiArtByName("лаборатория"));
+
+function getDescriptionByName(name) {
+	let art = arts.find(item => item.name === name);
+	return art ? art.description : "Описание не найдено";
+}
+
+function getAsciiArtByName(name) {
+	let art = arts.find(item => item.name === name);
+	return art ? art.ascii : art.ascii;
+}
+
+function updateAsciiArt() {
+	let asciiArt = getAsciiArtByName(currentLocation);
+	document.getElementById('ascii-art').innerHTML = `<pre>${asciiArt}</pre>`;
+}
+
+function changeLocation(newLocation) {
+	currentLocation = newLocation;
+	updateAsciiArt();
+}
+
+//changeLocation("коридор")
+
+
+
+
+function PlayerDie(){
+	console.log("кака пука лох ты сдох")
+	//location.reload()
+}
+
+
+//Старт игры...
+
+function StartGame(){
+	var consoleDiv = document.getElementById('console');
+	consoleDiv.querySelector('p').innerText = playerStart;
+	console.log("Лоховодство)")
+		const asciiDiv = document.getElementById('ascii-art');
+	if(asciiDiv){
+		asciiDiv.innerHTML = `<center><pre>${getAsciiArtByName("лаборатория")}</pre></center>`;
+	}
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+	StartGame();
+});
+
+/*function updateGameText() {
+
+	var location = locations[currentLocation];
+
+    if (location) {
+        const asciiArt = document.getElementById('ascii-art');
+        if (asciiArt) {
+            asciiArt.innerHTML = `<center><pre>${location.ascii}</pre></center>`;
+        }
+    }
+}*/
+
+/*function executeCommand() {
+	let input = document.getElementById('command-input').value.toLowerCase();
+	let words = input.split(' ');
+	let command = words[0];
+
+	if (command === "осмотреть" && words[1]) {
+		const consoleDiv = document.getElementById('console');
+			const asciiDiv = document.getElementById('ascii-art');
+			if(asciiDiv){
+				asciiDiv.innerHTML = `<center><pre>${getAsciiArtByName("лаборатория")}</pre></center>`;
+			}
+			if (words[1] === currentLocation) {
+				consoleDiv.innerHTML += `<center><p>${getDescriptionByName(currentLocation)}</p></center>`;
+			} 
+			else {
+				consoleDiv.innerHTML += `<center><p>Вы не можете осмотреть "${words[1]}" из "${currentLocation}".</p></center>`;
+			}	
+			
+		console.log("Выполняется осмотр...");
+	} else if (command === "идти" && words[1]) {
+		let newLocation = words[1];
+		changeLocation(newLocation);
+	} else if (command === "взять" && words[4]) {
+		let item = words[4];	
+		console.log(`Вы взяли ${item}`);
+	} else {
+		console.log("Неизвестная команда");
+	}
+}*/
+
+</script>
+</html>

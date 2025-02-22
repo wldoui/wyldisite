@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Игра</title>
+</head>
+<body>
+    <div id="ascii-art"><center><p>What I'm see</p></center></div>
+    <input type="text" id="command-input" placeholder="Введите команду...">
+    <button onclick="executeCommand()">Выполнить</button>
+    <div id="console"></div>
+
+    <script>
+        let arts = [
+            {
+                name: "лаборатория",
+                ascii: `
+                +-----------------+
+                |                 |
+                |                 |
+                |\\               /|
+                | \\_ _       _ _/ |
+                |    | |    | |   |
+                +-----------------+
+                `,
+                description: "Описание лабы)",
+                items: ["молоток", "колба", "странный предмет"]
+            },
+            {
+                name: "коридор",
+                ascii: `
+                +-----------------+
+                | \\             / |
+                |    \\       /    |
+                |      +---+      |
+                |      |   |      |
+                |      |   |      |
+                +-----------------+
+                `,
+                description: "Длинный коридор с множеством дверей.",
+                items: ["ключ", "записка"]
+            },
+			{
+                name: "секретная-комната",
+                ascii: `
+                +-----------------+
+                | сосочки)))      |
+                |      +---+      |
+                |тут кончают  люди|
+                |      +---+      |
+                |                 |
+                +-----------------+
+                `,
+                description: "Я кнчл спс",
+                items: ["сперма"]
+            }
+        ];
+
+        let currentLocation = "лаборатория";
+
+        function getAsciiArtByName(name) {
+            let art = arts.find(item => item.name === name);
+            return art ? art.ascii : "ASCII-арт не найден";
+        }
+
+        function getDescriptionByName(name) {
+            let location = arts.find(item => item.name === name);
+            return location ? location.description : "Описание не найдено";
+        }
+
+        function updateAsciiArt() {
+            let asciiArt = getAsciiArtByName(currentLocation);
+            document.getElementById('ascii-art').innerHTML = `<pre>${asciiArt}</pre>`;
+        }
+
+        function executeCommand() {
+            let input = document.getElementById('command-input').value.toLowerCase();
+            let words = input.split(' ');
+            let command = words[0];
+            let consoleDiv = document.getElementById('console');
+
+            if (command === "осмотреть") {
+                if (words[1] === currentLocation) {
+                    consoleDiv.innerHTML += `<center><p>${getDescriptionByName(currentLocation)}</p></center>`;
+                } else {
+                    consoleDiv.innerHTML += `<center><p>Вы не можете осмотреть "${words[1]}" из "${currentLocation}".</p></center>`;
+                }
+            } else if (command === "идти" && words[1]) {
+                let newLocation = words[1];
+                changeLocation(newLocation);
+            } else if (command === "взять" && words[1]) {
+                let item = words[1];
+                let currentItems = arts.find(loc => loc.name === currentLocation).items;
+                if (currentItems.includes(item)) {
+                    consoleDiv.innerHTML += `<center><p>Вы взяли ${item}.</p></center>`;
+                } else {
+                    consoleDiv.innerHTML += `<center><p>${item} здесь нет.</p></center>`;
+                }
+            } else {
+                consoleDiv.innerHTML += `<center><p>Неизвестная команда.</p></center>`;
+            }
+        }
+
+        function changeLocation(newLocation) {
+            if (arts.some(loc => loc.name === newLocation)) {
+                currentLocation = newLocation;
+                updateAsciiArt();
+                document.getElementById('console').innerHTML += `<center><p>Вы переместились в ${currentLocation}.</p></center>`;
+            } else {
+                document.getElementById('console').innerHTML += `<center><p>Локация "${newLocation}" не найдена.</p></center>`;
+            }
+        }
+
+        // Обновляем ASCII-арт при загрузке страницы
+        updateAsciiArt();
+    </script>
+</body>
+</html>
