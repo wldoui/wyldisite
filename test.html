@@ -24,7 +24,8 @@
                 +-----------------+
                 `,
                 description: "Описание лабы)",
-                items: ["молоток", "колба", "странный предмет"]
+                items: ["молоток", "колба", "странный предмет"],
+                exits: ["коридор"]
             },
             {
                 name: "коридор",
@@ -38,21 +39,23 @@
                 +-----------------+
                 `,
                 description: "Длинный коридор с множеством дверей.",
-                items: ["ключ", "записка"]
+                items: ["ключ", "записка"],
+                exits: ["лаборатория","к"]
             },
 			{
-                name: "секретная-комната",
+                name: "к",
                 ascii: `
                 +-----------------+
-                | сосочки)))      |
-                |      +---+      |
-                |тут кончают  люди|
-                |      +---+      |
-                |                 |
+                | хуйня собачая   |
+                |    уродство)    |
+                |   крайбёрд      |
+                |      письпись   |
+                |    писечник     |
                 +-----------------+
                 `,
-                description: "Я кнчл спс",
-                items: ["сперма"]
+                description: "Великое место, обожаю его лучшее во всей игре",
+                items: ["дилдо"],
+                exits: ["коридор"]
             }
         ];
 
@@ -87,7 +90,11 @@
                 }
             } else if (command === "идти" && words[1]) {
                 let newLocation = words[1];
-                changeLocation(newLocation);
+                if (canMoveTo(newLocation)) {
+                    changeLocation(newLocation);
+                } else {
+                    consoleDiv.innerHTML += `<center><p>Из "${currentLocation}" нет выхода в "${newLocation}".</p></center>`;
+                }
             } else if (command === "взять" && words[1]) {
                 let item = words[1];
                 let currentItems = arts.find(loc => loc.name === currentLocation).items;
@@ -99,6 +106,11 @@
             } else {
                 consoleDiv.innerHTML += `<center><p>Неизвестная команда.</p></center>`;
             }
+        }
+
+        function canMoveTo(newLocation) {
+            let currentExits = arts.find(loc => loc.name === currentLocation).exits;
+            return currentExits.includes(newLocation);
         }
 
         function changeLocation(newLocation) {
