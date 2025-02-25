@@ -11,7 +11,7 @@
     <div id="console"></div>
 
     <script>
-        let arts = [
+        /*let arts = [
             {
                 name: "лаборатория",
                 ascii: `
@@ -24,7 +24,8 @@
                 +-----------------+
                 `,
                 description: "Описание лабы)",
-                items: ["молоток", "колба", "странный предмет"],
+                items: ["пробирка", "колба"],
+                itemsDescription: ["старая пыльная пробирка", "старая сломанная колба"],
                 exits: ["коридор"]
             },
             {
@@ -40,26 +41,13 @@
                 `,
                 description: "Длинный коридор с множеством дверей.",
                 items: ["ключ", "записка"],
-                exits: ["лаборатория","к"]
-            },
-			{
-                name: "к",
-                ascii: `
-                +-----------------+
-                | хуйня собачая   |
-                |    уродство)    |
-                |   крайбёрд      |
-                |      письпись   |
-                |    писечник     |
-                +-----------------+
-                `,
-                description: "Великое место, обожаю его лучшее во всей игре",
-                items: ["дилдо"],
-                exits: ["коридор"]
+                itemsDescription: ["ржавый ключ", "старая записка"],
+                exits: ["лаборатория"]
             }
         ];
 
         let currentLocation = "лаборатория";
+        let inventory = [];
 
         function getAsciiArtByName(name) {
             let art = arts.find(item => item.name === name);
@@ -69,6 +57,17 @@
         function getDescriptionByName(name) {
             let location = arts.find(item => item.name === name);
             return location ? location.description : "Описание не найдено";
+        }
+
+        function getItemDescription(itemName) {
+            let location = arts.find(loc => loc.name === currentLocation);
+            if (location) {
+                let index = location.items.indexOf(itemName);
+                if (index !== -1) {
+                    return location.itemsDescription[index];
+                }
+            }
+            return "Описание предмета не найдено";
         }
 
         function updateAsciiArt() {
@@ -85,6 +84,13 @@
             if (command === "осмотреть") {
                 if (words[1] === currentLocation) {
                     consoleDiv.innerHTML += `<center><p>${getDescriptionByName(currentLocation)}</p></center>`;
+                } else if (words[1]) {
+					if (inventory.includes(item)) {
+						consoleDiv.innerHTML += `<center><p>${getItemDescription(words[1])}</p></center>`;
+					}
+					/*else {
+						consoleDiv.innerHTML += `<center><p>Нечего осматривать, предмет "${words[1]}" не подобран</p></center>`;
+					}
                 } else {
                     consoleDiv.innerHTML += `<center><p>Вы не можете осмотреть "${words[1]}" из "${currentLocation}".</p></center>`;
                 }
@@ -97,15 +103,143 @@
                 }
             } else if (command === "взять" && words[1]) {
                 let item = words[1];
-                let currentItems = arts.find(loc => loc.name === currentLocation).items;
-                if (currentItems.includes(item)) {
+                if (inventory.includes(item)) {
+                    consoleDiv.innerHTML += `<center><p>У вас уже есть ${item}.</p></center>`;
+                } else {
+                    let currentItems = arts.find(loc => loc.name === currentLocation).items;
+                    if (currentItems.includes(item)) {
+                        inventory.push(item);
+                        consoleDiv.innerHTML += `<center><p>Вы взяли ${item}.</p></center>`;
+                    } else {
+                        consoleDiv.innerHTML += `<center><p>${item} здесь нет.</p></center>`;
+                    }
+                }
+            } else {
+                consoleDiv.innerHTML += `<center><p>Неизвестная команда.</p></center>`;
+            }
+        }
+
+        function canMoveTo(newLocation) {
+            let currentExits = arts.find(loc => loc.name === currentLocation).exits;
+            return currentExits.includes(newLocation);
+        }
+
+        function changeLocation(newLocation) {
+            if (arts.some(loc => loc.name === newLocation)) {
+                currentLocation = newLocation;
+                updateAsciiArt();
+                document.getElementById('console').innerHTML += `<center><p>Вы переместились в ${currentLocation}.</p></center>`;
+            } else {
+                document.getElementById('console').innerHTML += `<center><p>Локация "${newLocation}" не найдена.</p></center>`;
+            }
+        }
+
+        // Обновляем ASCII-арт при загрузке страницы
+        updateAsciiArt();*/
+		
+        let arts = [
+            {
+                name: "лаборатория",
+                ascii: `
+                +-----------------+
+                |                 |
+                |                 |
+                |\\               /|
+                | \\_ _       _ _/ |
+                |    | |    | |   |
+                +-----------------+
+                `,
+                description: "Описание лабы)",
+                items: ["пробирка", "колба"],
+                itemsDescription: ["старая пыльная пробирка", "старая сломанная колба"],
+                exits: ["коридор"]
+            },
+            {
+                name: "коридор",
+                ascii: `
+                +-----------------+
+                | \\             / |
+                |    \\       /    |
+                |      +---+      |
+                |      |   |      |
+                |      |   |      |
+                +-----------------+
+                `,
+                description: "Длинный коридор с множеством дверей.",
+                items: [""],
+                itemsDescription: [""],
+                exits: ["лаборатория"]
+            }
+        ];
+
+        let currentLocation = "лаборатория";
+        let inventory = []; // Инвентарь игрока
+
+        function getAsciiArtByName(name) {
+            let art = arts.find(item => item.name === name);
+            return art ? art.ascii : "ASCII-арт не найден";
+        }
+
+        function getDescriptionByName(name) {
+            let location = arts.find(item => item.name === name);
+            return location ? location.description : "Описание не найдено";
+        }
+
+        function getItemDescription(itemName) {
+            let location = arts.find(loc => loc.items.includes(itemName));
+            if (location) {
+                let index = location.items.indexOf(itemName);
+                if (index !== -1) {
+                    return location.itemsDescription[index];
+                }
+            }
+            return "Описание предмета не найдено";
+        }
+
+        function updateAsciiArt() {
+            let asciiArt = getAsciiArtByName(currentLocation);
+            document.getElementById('ascii-art').innerHTML = `<pre>${asciiArt}</pre>`;
+        }
+
+        function executeCommand() {
+            let input = document.getElementById('command-input').value.toLowerCase();
+            let words = input.split(' ');
+            let command = words[0];
+            let consoleDiv = document.getElementById('console');
+
+            if (command === "осмотреть") {
+                if (words[1] === currentLocation) {
+                    consoleDiv.innerHTML += `<center><p>${getDescriptionByName(currentLocation)}</p></center>`;
+                } else if (inventory.includes(words[1])) {
+                    consoleDiv.innerHTML += `<center><p>${getItemDescription(words[1])}</p></center>`;
+                } else {
+                    consoleDiv.innerHTML += `<center><p>Вы не можете осмотреть "${words[1]}". У вас его нет.</p></center>`;
+                }
+            } else if (command === "идти" && words[1]) {
+                let newLocation = words[1];
+                if (canMoveTo(newLocation)) {
+                    changeLocation(newLocation);
+                } else {
+                    consoleDiv.innerHTML += `<center><p>Из "${currentLocation}" нет выхода в "${newLocation}".</p></center>`;
+                }
+            } else if (command === "взять" && words[1]) {
+                let item = words[1];
+                if (isItemInLocation(item) && !inventory.includes(item)) {
+                    inventory.push(item);
                     consoleDiv.innerHTML += `<center><p>Вы взяли ${item}.</p></center>`;
+                } else if (inventory.includes(item)) {
+                    consoleDiv.innerHTML += `<center><p>У вас уже есть ${item}.</p></center>`;
                 } else {
                     consoleDiv.innerHTML += `<center><p>${item} здесь нет.</p></center>`;
                 }
             } else {
                 consoleDiv.innerHTML += `<center><p>Неизвестная команда.</p></center>`;
             }
+        }
+
+        function isItemInLocation(item) {
+            let currentItems = arts.find(loc => loc.name === currentLocation).items;
+            return currentItems.includes(item);
         }
 
         function canMoveTo(newLocation) {
