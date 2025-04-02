@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ОМГ МОЙ НОВЫЙ САЙТ???</title>
+    <style>
+	body {
+		 background-image: url("source/background_mods.png");
+	}
+	p {
+		color: pink;
+		mix-blend-mode: difference;
+		font-size: 20px;
+	}
+	
+    </style>
+</head>
+<body>
+<center><p>Поиск!!! ОМГАД<p></center>
+<center><input type="text" id="search" class="search" name="page" placeholder="Введите название страницы..." size="50"></center>
+<p></p>
+<center><button class="search" type="button" id="button" onclick="displayMods()">НАЙТИ!!!!!!!!!!!!!!!</button></center>
+<p></p>
+<center><div class="container">
+  <img src="source\img_girl.png" height = "200" width="250">
+  <div class="centered"><p color="white" id="checkthis" class="bottomtext">Copyright &copy;1999 Made <strike>Woowz11</strike> Wyldi</p></div>
+</div></center>
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+		  const apiKey = "$2a$10$3qlFIUUlCbbzgz6HiyJR..Eiw3H0tfjqqKY.s8mnyMjoS4ZRul5zm";
+		  const searchInput = document.getElementById("search");
+		  const searchButton = document.getElementById("searchButton");
+		  const modsContainer = document.getElementById("modsContainer");
+
+		  async function fetchMods(query = "") {
+			modsContainer.innerHTML = "Загрузка...";
+			try {
+			  const response = await fetch(
+				`https://api.curseforge.com/v1/mods/search?gameId=432&searchFilter=${query}`,
+				{
+				  headers: {
+					"x-api-key": apiKey
+				  }
+				}
+			  );
+			  const data = await response.json();
+			  displayMods(data.data || []);
+			} catch (error) {
+			  console.error("Ошибка загрузки модов:", error);
+			  modsContainer.innerHTML = "Ошибка загрузки модов.";
+			}
+		  }
+
+		  function displayMods(mods) {
+			modsContainer.innerHTML = "";
+			if (mods.length === 0) {
+			  modsContainer.innerHTML = "Моды не найдены.";
+			  return;
+			}
+			mods.forEach((mod) => {
+			  const modElement = document.createElement("div");
+			  modElement.classList.add("mod-item");
+			  modElement.innerHTML = `
+				<h3>${mod.name}</h3>
+				<p>${mod.summary}</p>
+				<a href="${mod.links.websiteUrl}" target="_blank" class="download-link">Скачать</a>
+			  `;
+			  modsContainer.appendChild(modElement);
+			});
+		  }
+
+		  searchButton.addEventListener("click", () => {
+			fetchMods(searchInput.value);
+		  });
+
+		  fetchMods();
+		});
+	</script>
+</body>
+</html>
