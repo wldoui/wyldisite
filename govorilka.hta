@@ -1,0 +1,92 @@
+<html>
+<head>
+  <title>GOVORILKA</title>
+  <hta:application border="thin" maximizeButton="no" minimizeButton="yes" scroll="no" />
+  <script language="JScript">
+    var sapi = new ActiveXObject("SAPI.SpVoice");
+    var voices = sapi.GetVoices();
+
+    function populateVoices() {
+      var select = document.getElementById("voiceList");
+      for (var i = 0; i < voices.Count; i++) {
+        var item = document.createElement("option");
+        item.text = voices.Item(i).GetDescription();
+        item.value = i;
+        select.add(item);
+      }
+    }
+
+    function speakText() {
+      var text = document.getElementById("speakInput").value;
+      var voiceIndex = document.getElementById("voiceList").value;
+      var rate = document.getElementById("rateSlider").value;
+      var volume = document.getElementById("volumeSlider").value;
+
+      if (!text) return;
+
+      sapi.Voice = voices.Item(voiceIndex);
+      sapi.Rate = rate;
+      sapi.Volume = volume;
+      sapi.Speak(text);
+    }
+
+    function saveToWav() {
+      var text = document.getElementById("speakInput").value;
+      var voiceIndex = document.getElementById("voiceList").value;
+      var rate = document.getElementById("rateSlider").value;
+      var volume = document.getElementById("volumeSlider").value;
+
+      if (!text) return;
+
+      var fso = new ActiveXObject("Scripting.FileSystemObject");
+      var shell = new ActiveXObject("Shell.Application");
+      var stream = new ActiveXObject("SAPI.SpFileStream");
+      var voice = new ActiveXObject("SAPI.SpVoice");
+
+      try {
+        var path = prompt("D:\\!Other\\voice");
+        if (!path) return;
+
+        voice.Voice = voices.Item(voiceIndex);
+        voice.Rate = rate;
+        voice.Volume = volume;
+
+        stream.Open(path, 3, true); // 3 = SSFMCreateForWrite
+        voice.AudioOutputStream = stream;
+        voice.Speak(text);
+        stream.Close();
+
+        alert("File saved:\n" + path);
+      } catch (e) {
+        alert("Error while saving: " + e.message);
+      }
+    }
+
+    window.onload = function() {
+      if (voices.Count === 0) {
+        alert("⛔ There are no Windows voices installed in the system. Install them through Windows settings → Time and language → Speech → Add a voice.");
+        return;
+      }
+      populateVoices();
+    }
+  </script>
+</head>
+<body style="font-family:Segoe UI;padding:10px;width:400px">
+  <h2>Windows Talker</h2>
+
+  <label>Choose a voice:</label><br>
+  <select id="voiceList" style="width:100%;"></select><br><br>
+
+  <label>Volume(0-100):</label><br>
+  <input type="range" id="volumeSlider" min="0" max="100" value="100" style="width:100%"><br><br>
+
+  <label>Speed(-10 to +10):</label><br>
+  <input type="range" id="rateSlider" min="-10" max="10" value="0" style="width:100%"><br><br>
+
+  <label>Enter Text:</label><br>
+  <textarea id="speakInput" rows="4" style="width:100%"></textarea><br><br>
+
+  <button onclick="speakText()">Play</button>
+  <button onclick="saveToWav()">Save to WAV</button>
+</body>
+</html>
