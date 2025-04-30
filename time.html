@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Я не поверил, конвертер времени🕉</title>
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .converter {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 300px;
+      margin-top: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      margin-top: 5px;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="converter">
+  <label for="value">Введите значение:</label>
+  <input type="number" id="value" placeholder="Введите число" min="0">
+
+  <label for="unit">Выберите единицу измерения:</label>
+  <select id="unit">
+    <option value="hours">Часы</option>
+    <option value="minutes">Минуты</option>
+	<option value="seconds">Секунды</option>
+  </select>
+
+  <button onclick="convert()">Преобразовать</button>
+
+  <div id="output" class="result"></div>
+</div>
+
+<script>
+  function convert() {
+    const value = parseFloat(document.getElementById('value').value);
+    const unit = document.getElementById('unit').value;
+    const output = document.getElementById('output');
+
+    if (isNaN(value)) {
+      output.innerHTML = 'Пожалуйста, введите корректное число.';
+      return;
+    }
+
+    let days, hours, minutes, seconds;
+
+    if (unit === 'hours') {
+      days = Math.floor(value / 24);
+      hours = Math.floor(value % 24);
+      minutes = Math.floor(value * 60);
+      seconds = Math.floor(value * 3600);
+      output.innerHTML = `
+        <strong>Из ${value} часов:</strong><br>
+        Дни: ${days}<br>
+        Часы: ${hours}<br>
+        Минуты: ${minutes}<br>
+        Секунды: ${seconds}
+      `;
+    }
+	else if (unit === 'minutes') {
+      days = Math.floor(value / (24 * 60));
+      hours = Math.floor((value % (24 * 60)) / 60);
+      minutes = Math.floor(value % 60);
+      seconds = Math.floor(value * 60);
+      output.innerHTML = `
+        <strong>Из ${value} минут:</strong><br>
+        Дни: ${days}<br>
+        Часы: ${hours}<br>
+        Минуты: ${minutes}<br>
+        Секунды: ${seconds}
+      `;
+	  
+    }
+	else if (unit === 'seconds') {
+	  days = Math.floor(value / 86400);
+	  hours = Math.floor((value % 86400) / 3600);
+	  minutes = Math.floor((value % 3600) / 60);
+	  seconds = Math.floor(value % 60);
+	  
+	  output.innerHTML = `
+		<strong>Из ${value} секунд:</strong><br>
+		Дни: ${days}<br>
+		Часы: ${hours}<br>
+		Минуты: ${minutes}<br>
+		Секунды: ${seconds}
+	  `;
+	}
+	else {
+      output.innerHTML = 'Выберите корректную единицу измерения.';
+    }
+  }
+</script>
+
+</body>
+</html>
