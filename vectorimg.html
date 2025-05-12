@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Universal Image Converter</title>
+  <script src="https://cdn.jsdelivr.net/npm/imagetracerjs/imagetracer_v1.2.6.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 2em; max-width: 700px; margin: auto; }
+    h2 { margin-bottom: 0.5em; }
+    #preview { margin-top: 1em; max-width: 300px; display: block; }
+    button { margin: 0.25em 0.5em 0.25em 0; padding: 0.5em 1em; }
+    .unsupported { background-color: #ddd; cursor: not-allowed; }
+    .note { font-size: 0.9em; color: #777; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h2>🖼 Universal Image Converter</h2>
+  <input type="file" id="imageInput" accept="image/*">
+  <img id="preview" alt="Preview"/>
+  <br>
+  <div id="downloadButtons" style="margin-top: 1em;"></div>
+  <p class="note">⚠ Некоторые форматы требуют серверной обработки и пока недоступны.</p>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const downloadButtons = document.getElementById('downloadButtons');
+    let originalImageDataUrl = '';
+
+    const formats = [
+      { ext: 'svg', supported: true },
+      { ext: 'png', supported: true },
+      { ext: 'jpg', supported: true },
+      { ext: 'webp', supported: true },
+      { ext: 'pdf', supported: true },
+      { ext: 'eps', supported: true },
+      { ext: 'ps', supported: true },
+      { ext: 'ai', supported: true },
+      { ext: 'dxf', supported: true },
+      { ext: 'emf', supported: true },
+      { ext: 'wmf', supported: true },
+      { ext: 'json', supported: true },
+      { ext: 'base64', supported: true }
+    ];
+
+    imageInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          originalImageDataUrl = e.target.result;
+          preview.src = originalImageDataUrl;
+          generateDownloadButtons();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function generateDownloadButtons() {
+      downloadButtons.innerHTML = '';
+      formats.forEach(fmt => {
+        const btn = document.createElement('button');
+        btn.textContent = `Download .${fmt.ext}`;
+        if (fmt.supported) {
+          btn.onclick = () => downloadFormat(fmt.ext);
+        } else {
+          btn.classList.add('unsupported');
+          btn.title = 'Требуется сервер';
+        }
+        downloadButtons.appendChild(btn);
+      });
+    }
+
+    function downloadFormat(ext) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.src = originalImageDataUrl;
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        if (ext === 'svg') {
+          const svg = ImageTracer.imagedataToSVG(ctx.getImageData(0, 0, img.width, img.height));
+          downloadFile(svg, 'converted.svg', 'image/svg+xml');
+        } else if (ext === 'base64') {
+          const base64 = originalImageDataUrl;
+          const blob = new Blob([base64], { type: 'text/plain' });
+          downloadFile(blob, 'converted_base64.txt', 'text/plain');
+        } else {
+          const mime = ext === 'jpg' ? 'image/jpeg' : `image/${ext}`;
+          canvas.toBlob(blob => {
+            downloadFile(blob, `converted.${ext}`, mime);
+          }, mime);
+        }
+      };
+    }
+
+    function downloadFile(content, filename, type) {
+      let blob = content instanceof Blob ? content : new Blob([content], { type });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+  </script>
+</body>
+</html>
