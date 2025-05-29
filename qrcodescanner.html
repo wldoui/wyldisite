@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyldi QrCodeScanner</title>
+	<style>
+		body {
+		  font-family: sans-serif;
+		  padding: 2em;
+		  background: url('../source/random/fafa.png');
+		}
+		#canvas {
+		  display: none;
+		}
+		#preview {
+		  max-width: 300px;
+		  margin-top: 1em;
+		  border: 1px solid #ccc;
+		}
+		#output {
+		  margin-top: 1em;
+		  font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+
+<h2>QR Сканнер (файл или буфер)</h2>
+
+<input type="file" id="fileInput" accept="image/*"><br><br>
+
+<p><strong>Или просто нажмите <kbd>Ctrl+V</kbd> с изображением QR-кода</strong></p>
+
+<canvas id="canvas"></canvas>
+<img id="preview" alt="Предпросмотр"><br>
+<div id="output">QR: <span id="qrResult">—</span></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const preview = document.getElementById('preview');
+  const qrResult = document.getElementById('qrResult');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  function processImage(img) {
+    const width = img.width;
+    const height = img.height;
+    canvas.width = width;
+    canvas.height = height;
+    ctx.drawImage(img, 0, 0, width, height);
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const code = jsQR(imageData.data, width, height);
+    if (code) {
+      qrResult.textContent = code.data;
+    } else {
+      qrResult.textContent = 'QR-код не найден';
+    }
+  }
+
+  fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        preview.src = img.src;
+        processImage(img);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.addEventListener('paste', (event) => {
+    const items = event.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        const blob = items[i].getAsFile();
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            preview.src = img.src;
+            processImage(img);
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(blob);
+      }
+    }
+  });
+</script>
+</html>
