@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>CPS Литуист Тестер</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00ff00;
+            font-family: "Courier New", monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 20px;
+            user-select: none;
+        }
+        h1 {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            margin-bottom: 10px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #111;
+            color: #00ffff;
+            margin-right: 5px;
+            border: 2px solid #ff00ff;
+            border-radius: 0;
+            user-select: none;
+            font-weight: bold;
+        }
+        .tab.active {
+            background-color: #222;
+            color: #ff0000;
+            border-color: #ff0000;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .controls button {
+            padding: 5px 20px;
+            font-family: inherit;
+            cursor: pointer;
+            background: #111;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .controls button:hover {
+            background: #333;
+            border-color: #ff00ff;
+            color: #ff00ff;
+        }
+        .cps-box {
+            width: 320px;
+            height: 200px;
+            background-color: #1a1a1a;
+            border: 2px dashed #00ffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff0000;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .info {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        canvas {
+            background-color: #111;
+            border: 1px solid #ff00ff;
+            margin: 10px 0 20px 0;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .actions button {
+            padding: 5px 30px;
+            font-family: inherit;
+            cursor: pointer;
+            background: #111;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .actions button:hover {
+            background: #333;
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <h1>CPS TESTER ЛИТУИЗМ</h1>
+
+    <div class="tabs">
+        <div class="tab active" data-button="left">ЛЕВАЯ</div>
+        <div class="tab" data-button="right">ПРАВАЯ</div>
+    </div>
+
+    <div class="controls">
+        <button data-time="5">5 СЕК</button>
+        <button data-time="10">10 СЕК</button>
+        <button data-time="20">20 СЕК</button>
+    </div>
+
+    <div class="cps-box" id="cps-box">КЛИКАЙ</div>
+
+    <div class="info" id="cps-result">CPS: 0</div>
+    <div class="info" id="cps-max">MAX CPS: 0</div>
+
+    <canvas id="cps-graph" width="500" height="150"></canvas>
+
+    <div class="actions">
+        <button id="stop-btn">СТОП</button>
+        <button id="restart-btn">ЗАНОВО</button>
+    </div>
+
+    <script>
+        let currentButton = 'left';
+        let clicks = 0;
+        let cpsData = [];
+        let maxCPS = 0;
+        let testDuration = 5;
+        let startTime = null;
+        let isTesting = false;
+        let intervalId = null;
+
+        const cpsBox = document.getElementById('cps-box');
+        const cpsResult = document.getElementById('cps-result');
+        const cpsMax = document.getElementById('cps-max');
+        const tabs = document.querySelectorAll('.tab');
+        const timeButtons = document.querySelectorAll('.controls button');
+        const canvas = document.getElementById('cps-graph');
+        const stopBtn = document.getElementById('stop-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const ctx = canvas.getContext('2d');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentButton = tab.dataset.button;
+                resetTest();
+            });
+        });
+
+        timeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                testDuration = parseInt(btn.dataset.time);
+                resetTest();
+            });
+        });
+
+        cpsBox.addEventListener('mousedown', (e) => {
+            if (!isTesting || (currentButton === 'left' && e.button !== 0) || (currentButton === 'right' && e.button !== 2)) return;
+            e.preventDefault();
+            clicks++;
+        });
+
+        cpsBox.addEventListener('contextmenu', (e) => {
+            if (currentButton === 'right') e.preventDefault();
+        });
+
+        stopBtn.addEventListener('click', () => {
+            clearInterval(intervalId);
+            isTesting = false;
+        });
+
+        restartBtn.addEventListener('click', () => {
+            resetTest();
+        });
+
+        function resetTest() {
+            clearInterval(intervalId);
+            startTime = null;
+            clicks = 0;
+            cpsData = [];
+            maxCPS = 0;
+            isTesting = true;
+            cpsResult.textContent = 'CPS: 0';
+            cpsMax.textContent = 'MAX CPS: 0';
+            startTime = Date.now();
+            intervalId = setInterval(updateTest, 100);
+            drawGraph();
+        }
+
+        function updateTest() {
+            let elapsed = (Date.now() - startTime) / 1000;
+            if (elapsed > testDuration) {
+                clearInterval(intervalId);
+                isTesting = false;
+                return;
+            }
+            let cps = clicks / elapsed;
+            cps = +cps.toFixed(1);
+            cpsData.push(cps);
+            if (cps > maxCPS) maxCPS = cps;
+            cpsResult.textContent = `CPS: ${cps}`;
+            cpsMax.textContent = `MAX CPS: ${maxCPS}`;
+            drawGraph();
+        }
+
+        function drawGraph() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            cpsData.forEach((val, idx) => {
+                let x = idx * (canvas.width / (testDuration * 10));
+                let y = canvas.height - (val / (maxCPS || 1)) * canvas.height;
+                if (idx === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>

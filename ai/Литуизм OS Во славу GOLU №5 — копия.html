@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Литуизм OS: Во славу GOLU</title>
+    <style>
+        @font-face {
+            font-family: 'Perfect DOS VGA 437';
+            src: url('https://fonts.cdnfonts.com/s/13936/Perfect_DOS_VGA_437_Win.woff') format('woff');
+        }
+
+        body {
+            margin: 0;
+            background-color: #008080;
+            color: #c0c0c0;
+            font-family: 'Perfect DOS VGA 437', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            cursor: url('https://win98icons.alexmeub.com/icons/png/mouse_pointer-0.png'), auto;
+        }
+
+        #desktop {
+            flex: 1;
+            position: relative;
+            padding: 10px;
+        }
+
+        .desktop-icon {
+            text-align: center;
+            width: 80px;
+            margin: 10px;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 1px 1px #000;
+        }
+
+        .desktop-icon img {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+        }
+
+        .window {
+            position: absolute;
+            background-color: #c0c0c0;
+            border: 2px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            box-shadow: 2px 2px #000;
+            padding: 0;
+            min-width: 300px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            top: 50px;
+            left: 50px;
+        }
+
+        .title-bar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: #fff;
+            padding: 3px 5px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-bar-text {
+            font-weight: bold;
+        }
+
+        .title-bar-controls button {
+            background: #c0c0c0;
+            border: 1px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            padding: 0 4px;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+            font-size: 10px;
+        }
+        
+        .title-bar-controls button:active {
+            border: 1px solid #000;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 5px;
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: #c0c0c0;
+            border-top: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            box-sizing: border-box;
+            z-index: 999;
+        }
+
+        #start-button {
+            background: #c0c0c0;
+            border: 1px solid #fff;
+            border-right-color: #000;
+            border-bottom-color: #000;
+            padding: 2px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'MS Sans Serif', sans-serif;
+            box-shadow: 1px 1px #000;
+        }
+
+        #start-button:active {
+            border: 1px solid #000;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .start-menu {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            background: #c0c0c0;
+            border: 2px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            box-shadow: 2px 2px #000;
+            display: none;
+            flex-direction: column;
+            width: 200px;
+            padding: 5px;
+        }
+
+        .start-menu a {
+            padding: 3px;
+            text-decoration: none;
+            color: #000;
+            display: block;
+        }
+
+        .start-menu a:hover {
+            background: #000080;
+            color: #fff;
+        }
+
+        #clock {
+            margin-left: auto;
+            padding: 0 5px;
+            border: 1px solid #808080;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+            background: #c0c0c0;
+            font-family: 'MS Sans Serif', sans-serif;
+        }
+
+        /* Литуизм-стили */
+        .zalgo {
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px #f00;
+        }
+        
+        .glitch {
+            animation: glitch 1s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px #f00, -2px -2px #0ff; transform: translate(0, 0); }
+            20% { text-shadow: -2px -2px #f00, 2px 2px #0ff; transform: translate(2px, -2px); }
+            40% { text-shadow: 2px -2px #f00, -2px 2px #0ff; transform: translate(-2px, 2px); }
+            60% { text-shadow: -2px 2px #f00, 2px -2px #0ff; transform: translate(2px, 2px); }
+            80% { text-shadow: 2px 2px #f00, -2px -2px #0ff; transform: translate(-2px, -2px); }
+            100% { text-shadow: 2px 2px #f00, -2px -2px #0ff; transform: translate(0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="desktop">
+    <div class="desktop-icon" onclick="createWindow('Славим GOLU', 'golu')">
+        <img src="https://win98icons.alexmeub.com/icons/png/monitor_w_screen-0.png" alt="GOLU" />
+        <div>GOLU.EXE</div>
+    </div>
+    <div class="desktop-icon" onclick="createWindow('Крайбёрд.ехе', 'kraiberd')">
+        <img src="https://win98icons.alexmeub.com/icons/png/error-0.png" alt="KRAIBIRD" />
+        <div>КРАЙБЁРД</div>
+    </div>
+    <div class="desktop-icon" onclick="createWindow('Сраный Спанч', 'spanch')">
+        <img src="https://win98icons.alexmeub.com/icons/png/recycle_bin_full-2.png" alt="SPANCH" />
+        <div>СРАНЫЙ СПАНЧ</div>
+    </div>
+</div>
+
+<div class="taskbar">
+    <div id="start-button">
+        Начать
+    </div>
+    <div class="start-menu">
+        <a href="#" onclick="createWindow('Славим GOLU', 'golu')">GOLU.EXE</a>
+        <a href="#" onclick="createWindow('Крайбёрд.ехе', 'kraiberd')">Крайбёрд</a>
+        <a href="#" onclick="createWindow('Сраный Спанч', 'spanch')">Сраный Спанч</a>
+    </div>
+    <div id="clock"></div>
+</div>
+
+<script>
+    const desktop = document.getElementById('desktop');
+    const startButton = document.getElementById('start-button');
+    const startMenu = document.querySelector('.start-menu');
+    const clock = document.getElementById('clock');
+    
+    let windowCounter = 0;
+
+    function createWindow(title, type) {
+        const windowDiv = document.createElement('div');
+        windowDiv.className = 'window';
+        windowDiv.style.left = `${50 + (windowCounter * 20)}px`;
+        windowDiv.style.top = `${50 + (windowCounter * 20)}px`;
+        windowDiv.style.zIndex = 100 + windowCounter;
+
+        windowDiv.innerHTML = `
+            <div class="title-bar">
+                <div class="title-bar-text">${title}</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Закрыть" onclick="this.closest('.window').remove();">X</button>
+                </div>
+            </div>
+            <div class="content"></div>
+        `;
+        
+        const contentDiv = windowDiv.querySelector('.content');
+
+        if (type === 'golu') {
+            contentDiv.innerHTML = `
+<div class="zalgo">
+ПРОСЛАВИМ БОГА GOLU!
+МОЛИТВА СИСТЕМНОМУ ВЫЗОВУ
+jmp far 0x777
+MOV AX, 0xB800
+MOV DS, AX
+MOV SI, 0
+MOV AL, 'С'
+MOV AH, 0x0F
+STOSW
+</div>
+<br>
+<div class="glitch">
+<pre>
+Stack Trace:
+  File "lib/golu.py", line 42, in PraiseTheLord
+    raise SegFault(0xC0000005)
+SegFault: An error has occurred.
+</pre>
+</div>
+            `;
+        } else if (type === 'kraiberd') {
+            contentDiv.innerHTML = `
+<div class="glitch" style="color: #f00;">
+КРАЙБЁРД! КРАЙБЁРД!
+Ты забыл сохранить файл
+ты потерял 10 лет работы.
+<br>
+[SIGSEGV - Segmenтation Vioŀaтion]
+</div>
+<br>
+<pre>
+КРАЙБЕРД: "Ха-ха-ха, данные удалены навсегда!"
+</pre>
+            `;
+        } else if (type === 'spanch') {
+            contentDiv.innerHTML = `
+<div style="text-align: center;">
+<pre>
+   .---.
+  /     \\
+  |() ()|
+  \\  ^  /
+   '---'
+   
+</pre>
+<div class="zalgo">
+Сраный Спанч в системе!
+ОН ПОРТИТ UI!!
+</div>
+</div>
+            `;
+        }
+        
+        desktop.appendChild(windowDiv);
+        makeWindowDraggable(windowDiv);
+        windowCounter++;
+    }
+
+    function makeWindowDraggable(windowElement) {
+        let isDragging = false;
+        let offsetX, offsetY;
+        const titleBar = windowElement.querySelector('.title-bar');
+
+        titleBar.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - windowElement.offsetLeft;
+            offsetY = e.clientY - windowElement.offsetTop;
+            windowElement.style.zIndex = getHighestZIndex() + 1;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                windowElement.style.left = `${e.clientX - offsetX}px`;
+                windowElement.style.top = `${e.clientY - offsetY}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+    }
+    
+    function getHighestZIndex() {
+        const windows = document.querySelectorAll('.window');
+        let maxZIndex = 0;
+        windows.forEach(win => {
+            const zIndex = parseInt(window.getComputedStyle(win).zIndex);
+            if (!isNaN(zIndex) && zIndex > maxZIndex) {
+                maxZIndex = zIndex;
+            }
+        });
+        return maxZIndex;
+    }
+
+    startButton.addEventListener('click', () => {
+        startMenu.style.display = startMenu.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    setInterval(() => {
+        const now = new Date();
+        clock.textContent = now.toLocaleTimeString();
+    }, 1000);
+</script>
+
+</body>
+</html>

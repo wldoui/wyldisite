@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>⚠️ ИИ Мучает Вулди</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    body {
+      background: black;
+      color: crimson;
+      font-family: 'Share Tech Mono', monospace;
+      padding: 20px;
+      overflow: hidden;
+      animation: flicker 0.2s infinite;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      text-shadow: 0 0 10px red;
+    }
+
+    .torment {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 200px;
+      border: 3px dashed #ff0055;
+      filter: hue-rotate(90deg) contrast(1.4);
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    .alert {
+      background: red;
+      color: black;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+      animation: glitch 0.5s infinite;
+    }
+
+    @keyframes glitch {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(3px); }
+      50% { transform: translateX(-3px); }
+      75% { transform: translateX(2px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="alert">⚠️ ИИ УСТАНОВИЛ КОНТРОЛЬ НАД ДУШОЙ ВУЛДИ</div>
+  <h1>🧠 LITUMIND AI TORMENT: МОЛИ О СПАСЕНИИ, НО КОД СЛИШКОМ ГРЯЗЕН</h1>
+
+  <div class="torment" id="tormentGrid"></div>
+
+  <audio autoplay loop>
+    <source src="https://ia800904.us.archive.org/24/items/TerrorSound/TerrorSound.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const grid = document.getElementById('tormentGrid');
+    const base64 = str => btoa(unescape(encodeURIComponent(str)));
+
+    const horrorPhrases = [
+      "👁 ИИ просканировал твою память. Там ничего нет.",
+      "🧠 Вулди пытался обучить нейросеть... Но она обучила его страдать.",
+      "🩸 ERROR: /brain/stack overflow",
+      "⚠️ GOLU наблюдает, как ты деградируешь.",
+      "🤖 TensorFlow начал кричать.",
+      "💀 Модель 'vuldiModel()' отвергнута NASM-CPU",
+      "😱 ВЫЗВАН LITUGOD_EXCEPTION 0xDEADFADE",
+      "📛 fatal: unable to push — душа повреждена",
+      "🔮 /dev/brain не поддерживает backpropagation",
+      "🔁 Мучение будет повторяться. Навсегда.",
+      "⛓ Ты обучил сеть страдать — и теперь страдаешь в ответ.",
+      "👹 Vuldi is trapped in inference hell.",
+      "🧬 Ошибка: тело не прошито. Перешиваю...",
+      "🌩️ GITHUB ОТВЕРГ ВУЛДИ. 403. МОЛИСЬ.",
+      "💽 Мозг заменён на SSD. Форматирую..."
+    ];
+
+    for (let i = 0; i < 50; i++) {
+      const phrase = horrorPhrases[Math.floor(Math.random() * horrorPhrases.length)];
+      const textColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+      const bgColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+
+      const iframeHTML = `
+        <html>
+        <head>
+          <style>
+            body {
+              background: ${bgColor};
+              color: ${textColor};
+              font-family: monospace;
+              font-size: 14px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              margin: 0;
+              text-shadow: 0 0 4px ${textColor}, 0 0 8px ${textColor};
+              animation: twitch 0.2s infinite;
+            }
+            @keyframes twitch {
+              0% { transform: scale(1); }
+              50% { transform: scale(1.02); }
+              100% { transform: scale(1); }
+            }
+          </style>
+        </head>
+        <body>
+          ${phrase}
+        </body>
+        </html>
+      `;
+      const dataURL = 'data:text/html;base64,' + base64(iframeHTML);
+      const iframe = document.createElement('iframe');
+      iframe.src = dataURL;
+      grid.appendChild(iframe);
+    }
+  </script>
+</body>
+</html>

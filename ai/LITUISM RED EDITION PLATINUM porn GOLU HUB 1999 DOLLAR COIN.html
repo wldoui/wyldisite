@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bloodeye System LITUISM RED EDITION PLATINUM porn GOLU HUB 1999 DOLLAR COIN</title>
+    <style>
+        @font-face {
+            font-family: 'Perfect DOS VGA 437';
+            src: url('https://fonts.cdnfonts.com/s/13936/Perfect_DOS_VGA_437_Win.woff') format('woff');
+        }
+
+        body {
+            margin: 0;
+            background-color: #550000;
+            color: #ff0000;
+            font-family: 'Perfect DOS VGA 437', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            cursor: url('https://woowz11.github.io/woowzsite/source/source/curs/p.png'), auto;
+            position: relative;
+        }
+
+        #bgCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.8;
+            filter: saturate(2) contrast(1.5);
+        }
+
+        #desktop {
+            flex: 1;
+            position: relative;
+            padding: 10px;
+        }
+
+        .desktop-icon {
+            text-align: center;
+            width: 80px;
+            margin: 10px;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 1px 1px #000;
+        }
+
+        .desktop-icon img {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+        }
+
+        .window {
+            position: absolute;
+            background-color: #c0c0c0;
+            border: 2px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            box-shadow: 2px 2px #000;
+            padding: 0;
+            min-width: 300px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            resize: both;
+            overflow: hidden;
+        }
+        
+        .title-bar {
+            background: linear-gradient(90deg, #ff0000, #ff5555);
+            color: #fff;
+            padding: 3px 5px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-bar-text {
+            font-weight: bold;
+        }
+
+        .title-bar-controls button {
+            background: #c0c0c0;
+            border: 1px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            padding: 0 4px;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+            font-size: 10px;
+        }
+        
+        .title-bar-controls button:active {
+            border: 1px solid #000;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 5px;
+            background: #000;
+            color: #f00;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: #c0c0c0;
+            border-top: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            box-sizing: border-box;
+            z-index: 999;
+        }
+
+        #start-button {
+            background: #c0c0c0;
+            border: 1px solid #fff;
+            border-right-color: #000;
+            border-bottom-color: #000;
+            padding: 2px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'MS Sans Serif', sans-serif;
+            box-shadow: 1px 1px #000;
+        }
+
+        #start-button:active {
+            border: 1px solid #000;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .start-menu {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            background: #c0c0c0;
+            border: 2px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            box-shadow: 2px 2px #000;
+            display: none;
+            flex-direction: column;
+            width: 200px;
+            padding: 5px;
+            z-index: 1000;
+        }
+
+        .start-menu a {
+            padding: 3px;
+            text-decoration: none;
+            color: #000;
+            display: block;
+        }
+
+        .start-menu a:hover {
+            background: #ff0000;
+            color: #fff;
+        }
+        
+        #clock {
+            margin-left: auto;
+            padding: 0 5px;
+            border: 1px solid #808080;
+            border-right-color: #fff;
+            border-bottom-color: #fff;
+            background: #c0c0c0;
+            font-family: 'MS Sans Serif', sans-serif;
+        }
+
+        .zalgo {
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px #0ff;
+        }
+        
+        .glitch {
+            animation: glitch 1s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px #f00, -2px -2px #0ff; transform: translate(0, 0); }
+            20% { text-shadow: -2px -2px #f00, 2px 2px #0ff; transform: translate(2px, -2px); }
+            40% { text-shadow: 2px -2px #f00, -2px 2px #0ff; transform: translate(-2px, 2px); }
+            60% { text-shadow: -2px 2px #f00, 2px -2px #0ff; transform: translate(2px, 2px); }
+            80% { text-shadow: 2px 2px #f00, -2px -2px #0ff; transform: translate(-2px, -2px); }
+            100% { text-shadow: 2px 2px #f00, -2px -2px #0ff; transform: translate(0, 0); }
+        }
+
+        .content-terminal {
+            flex: 1;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-bottom: 5px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .content-terminal::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+    <!-- Локальные скрипты для стабильности -->
+    <script>
+        // Имитация window.Woowz и window.WoowzAI, чтобы избежать ошибок, если внешние скрипты не загрузились
+        window.Woowz = window.Woowz || {
+            random: (min = 0, max = 1) => Math.random() * (max - min) + min,
+            // Добавляем заглушки для других функций, если они используются в background
+            // Например, Woowz.randomInt, Woowz.randomElement
+            randomInt: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
+            randomElement: (arr) => arr[Math.floor(Math.random() * arr.length)],
+        };
+
+        window.WoowzAI = window.WoowzAI || class {
+            constructor() {
+                console.warn('WoowzAI is not available, using a placeholder.');
+            }
+            sendSync(text) {
+                return new Promise(resolve => {
+                    setTimeout(() => resolve(`GOLU: "${text}" - это всего лишь ещё один кастыль.`), 1000);
+                });
+            }
+        };
+        
+        // Иконки в base64, чтобы избежать ошибок загрузки с внешних серверов
+        window.SourceIcons = window.SourceIcons || {
+            'computer-explorer': { src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAACjElEQVR4nO2Wy07CQBDHlyKx69yK21BwAY/Ah8AHgPjA5P7pW5i48AXwA4C4L1CgV68o3Vb9/1o8a/QdJ00Lpp1pZ3hXn87Ozp29ZpXgC5C8kCRV7o2/0kGSm/6Y/S/N04C99J2bWwD0wQeQZIn04M1Xq5fAPwDgl0g18Oaz24A+QJIkB94w2VwA7yDpZ0ne84e03fD3d93UAnjT/26gJEmrX+P2s2YAT+f9HUnqf8876+0B4P9B2VdJ3tX/P+a9oO/vufV/A8/T7vGfC6RJVhYw+8lXgD15T/13gA/5+3h2B/b1/d5XgC8S9eS/Rj3wA87d8P2W+727Rz9J81f6P7nN4E+184V/N9B9L4BfJOnP/99/Xn+W5k+7325zP4DPB4e3b2tSgC8kSVL7w2b/p3tD+J+/7V5D5p/1H//+dE/b/u/hV5J0k/e/x+3v+b3a+/5b367R/yNpr9J0o7t+zV48N4+d+WkSVb951+F37a9P4jL7u/e837rYwW3/f2/T0nS5vP7+vXlXv/3d7T9/W1/e0nS23f9b23+v93f1/23V7b1/d7Xh1f+vP+x2c9J0vX2+v1z4K/T9vV7xQ/f9/f8L+A3gM93v/P/Ffh+vP9g7/P/6f3v8r6/327+/vG+9/d/vQG+Nvkc6O/z+z+p/z/f7P7vS9L+j/f/f7X4/hX4/iGf737v2L+A/e/Y9b+3+9+XpA0b/v6VdI0f85MkgX3sL+V/A2zC/W08S2m34G4B/QGwB80/b0mSP+e+Yy8/6z8D/QGwB80/b0mSP8tV/8/s/v9X16s6sJ/9h5/R+6f987z+r5Mk2f/A7fP+0z+uR73fXybpvL9/2/7/bvv/B8B/APQ72R9IkiT/+P29f273v1n2+1b0f+73/5ek6f6x39/2f+z2v/3/iQ72s//3+L/T/X+f9p/Yj/W7f8z7H3L243d4k2XgA9JkkvTf85P/HkP3Hq/m93v07v0D/109+W/74k6sF/L27gA/R+S6b+7eB/gI8LqE5iA6b8Yv3k/8B2tF/QYxN+C5QAAAAASUVORK5CYII=', alt: 'NASM-OS' },
+            'bomb': { src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABHklEQVR4nO2VwU0DMRBFe293bHUAO4AOcAK2AAtggA3YgA2gA7QDdECDoIOgA9iAAfZgA8wD6Qj3kH5Wf2qQpEnu8/7H83wJkiRpmp13r1XQ69n9J8uycRkAX4AByF0A4L0JmF0A4D0lFfQkSZIU5n9gT3W+E6kI0n0J0j0R0oU9Vb+vQo1bH4y4FEmkK+kE8S7E7f4d3K+e0iFfL1R4b80k/U+9rUKNGX/s4L2t/L/F3eIJKfXgfw/sK8eS/0HkX/L2S9JekK2RJMm4A3gD1uB/J0lSJH32+3vYk+R9kLwIkv+H3d4I+S5Ivh90d2v6n3d7c3WwX/I972/u+zXgASo1tKRPWzAAAAAElFTkSuQmCC', alt: 'Game' },
+            'msie2': { src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAACYElEQVR4nO2Xy0oDQRCGv7Yh17h1I3gBfATf5d8eQJ9i8M/E/4sXb4S48F9A4v9QW4i3Hn1dE09LpIu5h2l2V7c/V+hI0lQApHnI7B7V1Q3K/k4A292eA+g2gG+4P2X3bQG73X4oAIPdngPgjru9A9BvQ7kH0H8J2O327t/7gN/m331xAJBvQ7kH0G8JmN0jAByg2+2dALBrzR4A+QcAuAB+5m5PAVjM3h0A7L7aG4B/e/3r/5kC8Pu/LQLAFt37jQDYr3v30gG83f+zXf+u7d8bJgDwA/4B9+T540cAnMvfL1gAYE+ePwLgW+Yp1p6HwB9iAQA+4D7T55vW3o+jABoA2A+hBQA+n1h2d0j+J2h/A+jX0B4A/fL+EACgX3QvJ917BwD8kYQo3RNgQAD/o8/fAOD/9gXl5HcA/J/2k06A/7P+w22Qj2wX2F51w4DqUwcC8D7H2N0bAOjH3i+c/1gAYD+26v0DAIB/2O4FwB94J6f4pL7dG4D92PvvB8C/bA3Y/vR/wA/vM/X+gG9Auvj+EwB+wX36LgD2Yy+m1/77s98bgB/mC/2P+n0A/w79532n2x/2f0jX+8A8f/yv5zFf7+l2h9oT3p8A5B3/2S31/v//g33Y7xMAf81P//s/23/lC2hWnJ/w/vD/kK53oF2S2v/3f8j9t/8dAD9hX32/APhzv17s00T6J/lVvwA/5e/eC+A3/0/XJ0l12N8fAPhB33n/APizl5g1P0nSHP2/1Bq+5+t/lP+p4r+3aG32x/2f1D+l1n1m/y2l1vN+H8E/7+6R/38mG3h9+f/VmvC+59L/L5N7B8D//k9+28/1C8sAAAAASUVORK5CYII=', alt: 'Terminal' },
+            'recycle-bin-full': { src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAACTElEQVR4nO2Xy0sCYRzHl8C3s2/0lB+gg21B1C7aBH0A9Qh6S+zKzE4xW+y0gWpS37Bv4S5cEHVgD3YhdM+A+c8yFp1JbXjI+97H8+TzfOa3t97vfZ/nn4z2W4n8mI8mQW22W2E2BwB/t2m0Yw59xX98dAP+g/20q6i+PjBGB4A/j+j3R11hG+yR+75A38fNnwB8/Y8+Y1sO8A+nSfrA57x+1jF3C6D/FAD+n2Yx83b28W9zJv7bL1rABO0O3X+yAfw5T2CjQy0f/Nl+W8D/D+/D7F0J3Q6gU9g7fLd45m74y/9B+X4e3zT3d4vA1nBv2/H7q/i4d8nE7u/WfHwAv5+6r93B/j76h03H+7h735eJ9jG8WjF3A1h4L5/v4Jd+3Vd0g+GfwJdJ+n2gJ0xU1yR5hO0m6z4gR3e2d6P7gC18nO8B6B+bA/z6r+L1wWb6wRk3s0/e3gT58P1m3k4A/48XwL8x/B/7h7c14xJd3f/2X/W4W7o6o1F1393hvw3A2z4+2M8u2L+uD+yA7s/A/8f+f21+4tQ/gI+A/j8rS7/Q93e7l5Vf9x73R+1mPt7Y7+8tX4C+Xz34w70LgD8c10P6j3d3Z4D+Xz1sY+4v2j+d3h7dD5g/4fG/Xn9mH7v+83t2wL+G/1/v+n/rA6A7f93AP5x/O+3t/7624D+2u6+T7y9H/Qd94e2vXyE3dvdX6B4tX4P9/18wT9sCj9A4c/5+f9XN/sCgGv9p/v7R+C03fH3178C7n7/Fz6T9T/t6D/n1dI26D+B0H3f//bF+78B/gIAb/3yF8w/bC6A8P+f0d8LgH8g739f8g+E/uH6h036136m1y9A/1/74/4LgD/y+12cE9bYx6hYv5f+Q92zK/0lW/5/E/8D//y/9V8D/B9yH4LwH4a/2f/B/d/n//n/R/6h0u/uQAAAABJRU5CYII=', alt: 'Pituh' },
+            'monitor-w-screen': { src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABOklEQVR4nO2Xy0oDQRCGv7Yh17h1I3gBfATf5d8eQJ9i8M/E/4sXb4S48F9A4v9QW4i3Hn1dE09LpIu5h2l2V7c/V+hI0lQApHnI7B7V1Q3K/k4A292eA+g2gG+4P2X3bQG73X4oAIPdngPgjru9A9BvQ7kH0H8J2O327t/7gN/m331xAJBvQ7kH0G8JmN0jAByg2+2dALBrzR4A+QcAuAB+5m5PAVjM3h0A7L7aG4B/e/3r/5kC8Pu/LQLAFt37jQDYr3v30gG83f+zXf+u7d8bJgDwA/4B9+T540cAnMvfL1gAYE+ePwLgW+Yp1p6HwB9iAQA+4D7T55vW3o+jABoA2A+hBQA+n1h2d0j+J2h/A+jX0B4A/fL+EACgX3QvJ917BwD8kYQo3RNgQAD/o8/fAOD/9gXl5HcA/J/2k06A/7P+w22Qj2wX2F51w4DqUwcC8D7H2N0bAOjH3i+c/1gAYD+26v0DAIB/2O4FwB94J6f4pL7dG4D92PvvB8C/bA3Y/vR/wA/vM/X+gG9Auvj+EwB+wX36LgD2Yy+m1/77s98bgB/mC/2P+n0A/w79532n2x/2f0jX+8A8f/yv5zFf7+l2h9oT3p8A5B3/2S31/v//g33Y7xMAf81P//s/23/lC2hWnJ/w/vD/kK53oF2S2v/3f8j9t/8dAD9hX32/APhzv17s00T6J/lVvwA/5e/eC+A3/0/XJ0l12N8fAPhB33n/APizl5g1P0nSHP2/1Bq+5+t/lP+p4r+3aG32x/2f1D+l1n1m/y2l1vN+H8E/7+6R/38mG3h9+f/VmvC+59L/L5N7B8D//k9+28/1C8sAAAAASUVORK5CYII=', alt: 'Mocha' },
+            'network-3': { src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAACvElEQVR4nO2Xy0sCUQwF323X+N/8RPoLgoLgQnSxd8M3/L9W02rXg4go6C7oQXTQy6EroP00oF/N0m1a/O974sV1mJ2/Mzu7O+f9d2ZuD0L/7eO2dOaA/9BvR9L88/d7lS0a/QcAvAD+gR4A+P67pU+tA+x32B8C+N1X7fP8D/yMfx8C+J39k/l/A4CfKj8C4C/3f/8267u9P+N/1g1gV2Ym/4f+jX+P7c9V//3oF7e4n7+62g/3t0jOQcAB9r8/t39t63cAVP8b+D0F+v7r9vJ4fA/w+B2v5xNg/w3wOw7v2v+FfQvw1/x//W8A4P6sH5qg3d6BngHgn7LzN6BfUvjA7t9pAD+o65f7c//2128C4B/6f/u63t3Dfu7v6+3vF9CvcW779l0wB+w71y/0V7eXwH5R/L8zB3A36D/cE/38gB8Nf8xP2BvVwD86lB+B0D+Nn8nAPi7Y/82APiT/1gAYL+9A3cAP6R8+T4A+gL6/mP+T/3fX3H6/g/b95v6+9k+V7e9f3bYj/O7QO+f0b8XwB+d7n/2H6zrv62+H9b9yv+7+1u09Qv289m9L+3r+7O0/d9wB/6r330z/7z3J+zX+b1n2mO/j0D/vL9hX6m9n9bV+n1X999V5t+v5+7f+3q5fRvwvjF/0V7v/m/v7nB/+r0H6B7oD/d3fF7Z1T+i+w+1b/h//r+2/Yf8wV2b0n7eN+G9w/7tL+s/s9d/U//+n+sXlH9n/2X7f+2/d/ufX8w/jD/N7Q38v6P+oJz+Y//t7T+Qd5c/1j/rF/M/48f0HwB+x/+uD+n/rA/Qf1hP/b7A/3mH+P+F9QJ5sV+x/P8W/wP7D/Yn9V/Vf2B3d7Xn+v9V7f+x+vP+h/Xf2P7X7f3n/L+/wH6v/sP8f2h/Vf2B/9+9LwD+i/y7f8T/3+6/u/u/Wv9N/X/B3v9fB3v9f2z7v+H/p9u/eL9v7s+w/2dY7/YF9N1Xv98H9o/qL3b/N/3/C3tA/v//7f8v+B92/zP0/gG/d/o/m/fX9N+n235v/f/Fkib/v38AAAAASUVORK5CYII=', alt: 'Browser' },
+        };
+    </script>
+    <!-- Загружаем внешний скрипт после наших заглушек -->
+    <script src="https://woowz11.github.io/woowzsite/source/source.js"></script>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div id="desktop">
+    <div class="desktop-icon" onclick="createWindow('NASM-OS v98', 'nasm')">
+        <img class="desktop-icon-img" src="" data-icon="computer-explorer" alt="NASM" />
+        <div>NASM-OS</div>
+    </div>
+    <div class="desktop-icon" onclick="createWindow('Vuvz vs Spanch', 'game')">
+        <img class="desktop-icon-img" src="" data-icon="bomb" alt="Game" />
+        <div>Vuvz vs Spanch</div>
+    </div>
+    <div class="desktop-icon" onclick="createWindow('Литуизм-Терминал', 'vuldi')">
+        <img class="desktop-icon-img" src="" data-icon="msie2" alt="Terminal" />
+        <div>Терминал GOLU</div>
+    </div>
+    <div class="desktop-icon" onclick="createWindow('Ссаный Питух.exe', 'pituh')">
+        <img class="desktop-icon-img" src="" data-icon="recycle-bin-full" alt="Pituh" />
+        <div>Ссаный Питух</div>
+    </div>
+    <div class="desktop-icon" onclick="createWindow('Святая Моча', 'mocha')">
+        <img class="desktop-icon-img" src="" data-icon="monitor-w-screen" alt="Mocha" />
+        <div>Святая Моча</div>
+    </div>
+    <div class="desktop-icon" onclick="createWindow('Вувзсайты', 'browser')">
+        <img class="desktop-icon-img" src="" data-icon="network-3" alt="Browser" />
+        <div>Вувзсайты</div>
+    </div>
+</div>
+
+<div class="taskbar">
+    <div id="start-button">
+        Начать
+    </div>
+    <div class="start-menu">
+        <a href="#" onclick="createWindow('NASM-OS v98', 'nasm')">💻 NASM-OS v98</a>
+        <a href="#" onclick="createWindow('Vuvz vs Spanch', 'game')">👾 Vuvz vs Spanch</a>
+        <a href="#" onclick="createWindow('Литуизм-Терминал', 'vuldi')">💡 Терминал GOLU</a>
+        <a href="#" onclick="createWindow('Ссаный Питух.exe', 'pituh')">🔥 Ссаный Питух</a>
+        <a href="#" onclick="createWindow('Святая Моча', 'mocha')">💧 Святая Моча</a>
+        <a href="#" onclick="createWindow('Вувзсайты', 'browser')">🌐 Вувзсайты</a>
+        <a href="#" onclick="createWindow('Музыка', 'music')">🎶 Музыка</a>
+    </div>
+    <div id="clock"></div>
+</div>
+
+<audio id="bgMusic" loop autoplay>
+    <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%91%D0%B5%D0%BB%D0%BA%D0%B0%20%D0%BD%D0%B0%20NASM.mp3" type="audio/mp3">
+    <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%92%D1%83%D0%B2%D0%B7%20%D0%BD%D0%B5%20%D0%B4%D0%B0%D1%81%D1%82%20%D0%92%D0%B0%D0%BC%20%D1%81%D0%BF%D0%BE%D0%BA%D0%BE%D0%B9%D0%BD%D0%BE%20%D0%B4%D0%B0%D1%82%D1%8C%20%D1%81%D0%BF%D0%B0%D1%82%D1%8C.mp3" type="audio/mp3">
+    <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/Vuvz%20Theme%20Pro.mp3" type="audio/mp3">
+    <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%94%D0%98%D0%94%D0%96%D0%95%D0%99%20%D0%9F%D0%98%D0%A2%D0%A3%D0%A5%20-%20%D0%9C%D0%BE%D1%87%D0%B0%20%D0%9B%D0%B8%D1%82%D1%83%D0%B8%D0%B7%D0%BC%D0%B0%20%D0%A2%D0%B5%D1%85%D0%BD%D0%BE.mp3" type="audio/mp3">
+</audio>
+
+<script>
+    const desktop = document.getElementById('desktop');
+    const startButton = document.getElementById('start-button');
+    const startMenu = document.querySelector('.start-menu');
+    const clock = document.getElementById('clock');
+    const bgMusic = document.getElementById('bgMusic');
+    const bgCanvas = document.getElementById('bgCanvas');
+    const ctx = bgCanvas.getContext('2d');
+    const tracks = [...document.querySelectorAll('#bgMusic source')].map(s => s.src);
+    let currentTrackIndex = 0;
+    let sceneCounter = 0;
+    const ai = new window.WoowzAI([], { remember: true });
+    let windowCounter = 0;
+
+    // Загрузка иконок из window.SourceIcons
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.desktop-icon-img').forEach(img => {
+            const iconName = img.dataset.icon;
+            const iconData = window.SourceIcons[iconName];
+            if (iconData) {
+                img.src = iconData.src;
+                img.alt = iconData.alt;
+            }
+        });
+    });
+
+    const asciiScenes = [
+        `
+        🧽 Спанч-унитаз-хакер!
+        
+        (\__/)
+        (•ㅅ•)
+        / 　 づ
+        
+        Спанч: "Я ТЕБЯ ВЗЛОМАЮ!"
+        `,
+        `
+        💨 Вувз:
+        "АААААААААА!"
+        _\\|//_
+        ( °_°)
+        /|  |
+        / \\
+        `,
+        `
+        💥 *BLAM*
+        💀 Спанч
+        "СКРИИИИИИИМ!"
+        `,
+        `
+        🧠 Вувз хакает
+        
+        [code injection detected]
+        `,
+        `
+        💻 HACKING IN PROGRESS
+        [====================] 100%
+        Прохор Корякин - взломан
+        `
+    ];
+
+    const infectionLevels = {
+        earth: 30,
+        mars: 20,
+        moon: 50,
+        titan: 70
+    };
+
+    function drawBackground() {
+        const width = bgCanvas.width = window.innerWidth;
+        const height = bgCanvas.height = window.innerHeight;
+        const cellSize = 20;
+        ctx.fillStyle = '#550000';
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
+        ctx.font = '12px "Perfect DOS VGA 437"';
+
+        for (let y = 0; y < height; y += cellSize) {
+            for (let x = 0; x < width; x += cellSize) {
+                if (window.Woowz.random() > 0.9) {
+                    const char = window.Woowz.random() > 0.5 ? Math.floor(window.Woowz.random() * 0xFFFF).toString(16).toUpperCase() : '0';
+                    ctx.fillText('0x' + char, x, y);
+                }
+            }
+        }
+        requestAnimationFrame(drawBackground);
+    }
+    drawBackground();
+
+    function updateAsciiGame(container) {
+        container.innerHTML = `<pre>${asciiScenes[sceneCounter % asciiScenes.length]}</pre>`;
+        sceneCounter++;
+    }
+
+    function processTerminalCommand(cmd, outputElement) {
+        const c = cmd.trim().toLowerCase();
+        outputElement.innerHTML += `> ${cmd}\n`;
+        switch (c) {
+            case 'help':
+                outputElement.innerHTML += 'Команды: **move**, **shoot**, **hack**, **infect &lt;target&gt;**, **clear**';
+                break;
+            case 'clear':
+                outputElement.innerHTML = '';
+                break;
+            case 'shoot':
+                outputElement.innerHTML += '💥 Вувз стреляет! Спанч визжит.';
+                break;
+            case 'hack':
+                outputElement.innerHTML += '🧠 Вувз использует NASM-хак. Вулди хохочет.';
+                showVuldiDestruction(outputElement);
+                break;
+            case 'move':
+                outputElement.innerHTML += '🚶 Вувз меняет позицию...';
+                break;
+            default:
+                if (c.startsWith('infect')) {
+                    const target = c.split(' ')[1];
+                    if (target && infectionLevels[target]) {
+                        outputElement.innerHTML += `🦠 Заражение начато в ${target.toUpperCase()}`;
+                        updateMap(target);
+                    } else {
+                        outputElement.innerHTML += 'Укажите цель: infect earth/mars/moon/titan';
+                    }
+                } else {
+                    outputElement.innerHTML += `Неизвестная команда: ${cmd}`;
+                }
+        }
+        outputElement.scrollTop = outputElement.scrollHeight;
+    }
+
+    function showVuldiDestruction(outputElement) {
+        const files = [
+            "System32.dll", "nudes_from_GOLU.png", "vuldi_soul.exe",
+            "brain.class", "game.idea", "hope.sys"
+        ];
+        let index = 0;
+        outputElement.innerHTML = '';
+        const timer = setInterval(() => {
+            if (index < files.length) {
+                outputElement.innerHTML += `<div class="glitch">Удаляется: ${files[index++]} ... [ОК]</div>\n`;
+            } else {
+                clearInterval(timer);
+                outputElement.innerHTML += "Я жив я вулди я крутой: Делай игры на WyldiEngine, псина!";
+            }
+        }, 400);
+    }
+
+    function updateMap(target) {
+        if (infectionLevels[target]) {
+            infectionLevels[target] = Math.min(100, infectionLevels[target] + 10);
+        }
+        updateMapDisplay();
+    }
+
+    function updateMapDisplay() {
+        const mapContent = `
+🌍 ЗАРАЖЕНИЕ ПЛАНЕТЫ:
+[🌐] Earth  ${'▓'.repeat(infectionLevels.earth/10)}░░░░░░░░░░ ${infectionLevels.earth}%
+[🪐] Mars   ${'▓'.repeat(infectionLevels.mars/10)}░░░░░░░░░░ ${infectionLevels.mars}%
+[🌒] Moon   ${'▓'.repeat(infectionLevels.moon/10)}░░░░░░░░░░ ${infectionLevels.moon}%
+[☄️] Titan  ${'▓'.repeat(infectionLevels.titan/10)}░░░░░░░░░░ ${infectionLevels.titan}%
+
+Выберите точку заражения: infect earth/mars/moon/titan
+        `;
+        const mapContainer = document.querySelector('.map-canvas');
+        if (mapContainer) {
+            mapContainer.innerHTML = `<pre>${mapContent}</pre>`;
+        }
+    }
+
+    function createWindow(title, type) {
+        const windowDiv = document.createElement('div');
+        windowDiv.className = 'window';
+        windowDiv.style.left = `${50 + (window.Woowz.random(0, 200))}px`;
+        windowDiv.style.top = `${50 + (window.Woowz.random(0, 100))}px`;
+        windowDiv.style.zIndex = getHighestZIndex() + 1;
+        windowCounter++;
+        
+        windowDiv.innerHTML = `
+            <div class="title-bar">
+                <div class="title-bar-text">${title}</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize" onclick="this.closest('.window').style.display='none';">_</button>
+                    <button aria-label="Maximize" onclick="this.closest('.window').classList.toggle('maximized');">☐</button>
+                    <button aria-label="Close" onclick="this.closest('.window').remove();">X</button>
+                </div>
+            </div>
+            <div class="content"></div>
+        `;
+        
+        const contentDiv = windowDiv.querySelector('.content');
+
+        if (type === 'nasm') {
+            contentDiv.innerHTML = `
+                <div id="nasmOutput" class="content-terminal">
+                    <pre>
+🪟 NASM-OS v98 Wyldi Edition
+┌───────────────────────────────┐
+│ 💻 [1] Взлом Прохора Корякина  │
+│ 🚀 [2] Пинг VuvzServer.exe    │
+│ 💡 [3] Lita Compiler Pro      │
+│ 🌐 [4] Сетевой браузер         │
+└───────────────────────────────┘
+Введите номер команды...
+                    </pre>
+                </div>
+                <div class="chat-box">
+                    <div id="chatLog" class="content-terminal"></div>
+                    <input id="chatInput" class="content-input" placeholder="Спросить GOLU..." />
+                </div>
+            `;
+            const chatInput = contentDiv.querySelector('#chatInput');
+            const chatLog = contentDiv.querySelector('#chatLog');
+            
+            chatInput.addEventListener('keydown', async (e) => {
+                if (e.key === 'Enter') {
+                    const val = chatInput.value.trim();
+                    if (!val) return;
+                    chatLog.innerHTML += `\n[Вувз]: ${val}`;
+                    chatInput.value = '';
+                    const reply = await ai.sendSync(val);
+                    chatLog.innerHTML += `\n<div class="glitch">[GOLU]: ${reply}</div>`;
+                    chatLog.scrollTop = chatLog.scrollHeight;
+                }
+            });
+
+        } else if (type === 'game') {
+            contentDiv.innerHTML = `
+                <div class="game-wrapper" style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                    <div class="ascii-game content-terminal" style="flex: 1; border: 1px solid #f00; padding: 10px;"></div>
+                    <div class="map-canvas content-terminal" style="flex: 1; border: 1px solid #f00; padding: 10px;"></div>
+                </div>
+            `;
+            const asciiGame = contentDiv.querySelector('.ascii-game');
+            setInterval(() => updateAsciiGame(asciiGame), 2500);
+            updateMapDisplay();
+        } else if (type === 'vuldi') {
+            contentDiv.innerHTML = `
+                <div id="vuldiOutput" class="content-terminal">
+                    <pre>
+<div class="zalgo">
+VULDI ENGINE v1.1.2
+>_
+</div>
+                    </pre>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <span>></span><input class="content-input" type="text" autocomplete="off" />
+                </div>
+            `;
+            const input = contentDiv.querySelector('input');
+            const output = contentDiv.querySelector('#vuldiOutput');
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    const val = input.value;
+                    processTerminalCommand(val, output);
+                    input.value = '';
+                }
+            });
+        } else if (type === 'pituh') {
+            contentDiv.innerHTML = `
+                <pre class="zalgo" style="color: #f00;">
+[CRITICAL ERROR]
+Ссаный Питух начал свою работу.
+Код Python (Version 2.7.3):
+
+while True:
+    print "SyntaxError: invalid syntax"
+    
+<div class="glitch">
+StackOverflowError
+</div>
+<br>
+[GOLU]: "Баги... баги повсюду!"
+                </pre>
+            `;
+        } else if (type === 'mocha') {
+            contentDiv.innerHTML = `
+                <pre style="color: #f00;">
+💧 Святая Моча
+Идёт обновление системы...
+(Моча течёт в USB-порт)
+
+>_ ` + 'A'.repeat(window.Woowz.randomInt(500, 1000)) + `
+
+<div class="glitch">
+Очистка от багов завершена.
+Перезапуск хардварной души...
+</div>
+                </pre>
+            `;
+        } else if (type === 'browser') {
+            contentDiv.innerHTML = `
+                <div style="height: 100%; display: flex; flex-direction: column; background: #c0c0c0;">
+                    <div style="display: flex;">
+                        <input class="content-input" placeholder="Введите URL вувзсайта..." style="background: #fff; border: 1px solid #000; padding: 5px; color: #000; flex: 1;" />
+                        <button style="border: 1px solid #000; padding: 5px;" onclick="document.querySelector('#browserFrame').src = this.previousElementSibling.value;">Go</button>
+                    </div>
+                    <iframe id="browserFrame" style="flex: 1; border: 1px solid #000; background: #fff;"></iframe>
+                </div>
+            `;
+        } else if (type === 'music') {
+            contentDiv.innerHTML = `
+                <div class="music-controls">
+                    <button onclick="bgMusic.play()">▶</button>
+                    <button onclick="bgMusic.pause()">⏸</button>
+                    <button onclick="changeTrack()">🎵</button>
+                    <span id="currentTrackInfo"></span>
+                </div>
+            `;
+            const currentTrackInfo = contentDiv.querySelector('#currentTrackInfo');
+            const updateTrackInfo = () => {
+                const trackName = tracks[currentTrackIndex].split('/').pop().replace('.mp3', '');
+                currentTrackInfo.textContent = `Сейчас играет: ${decodeURIComponent(trackName)}`;
+            };
+            updateTrackInfo();
+        }
+
+        desktop.appendChild(windowDiv);
+        makeWindowDraggable(windowDiv);
+    }
+
+    function makeWindowDraggable(windowElement) {
+        let isDragging = false;
+        let offsetX, offsetY;
+        const titleBar = windowElement.querySelector('.title-bar');
+
+        titleBar.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offsetX = e.clientX - windowElement.offsetLeft;
+            offsetY = e.clientY - windowElement.offsetTop;
+            windowElement.style.zIndex = getHighestZIndex() + 1;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                windowElement.style.left = `${e.clientX - offsetX}px`;
+                windowElement.style.top = `${e.clientY - offsetY}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+    }
+    
+    function getHighestZIndex() {
+        const windows = document.querySelectorAll('.window');
+        let maxZIndex = 0;
+        windows.forEach(win => {
+            const zIndex = parseInt(window.getComputedStyle(win).zIndex);
+            if (!isNaN(zIndex) && zIndex > maxZIndex) {
+                maxZIndex = zIndex;
+            }
+        });
+        return maxZIndex;
+    }
+
+    function changeTrack() {
+        currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+        bgMusic.src = tracks[currentTrackIndex];
+        bgMusic.play();
+        const currentTrackInfo = document.querySelector('#currentTrackInfo');
+        if (currentTrackInfo) {
+            const trackName = tracks[currentTrackIndex].split('/').pop().replace('.mp3', '');
+            currentTrackInfo.textContent = `Сейчас играет: ${decodeURIComponent(trackName)}`;
+        }
+    }
+
+    startButton.addEventListener('click', () => {
+        startMenu.style.display = startMenu.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!startMenu.contains(e.target) && e.target !== startButton) {
+            startMenu.style.display = 'none';
+        }
+    });
+
+    setInterval(() => {
+        const now = new Date();
+        clock.textContent = now.toLocaleTimeString();
+    }, 1000);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        createWindow('NASM-OS v98', 'nasm');
+        createWindow('Vuvz vs Spanch', 'game');
+    });
+</script>
+
+</body>
+</html>

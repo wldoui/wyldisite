@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloodeye System LITUISM RED EDITION PLATINUM porn GOLU HUB 1999 DOLLAR COIN</title>
+  <style>
+    /* Стили остались без изменений */
+    body {
+      margin: 0;
+      background-color: #550000;
+      color: #ff0000;
+      font-family: 'Courier New', monospace;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      cursor: default;
+      position: relative;
+    }
+
+    #bgCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.8;
+      filter: saturate(2) contrast(1.5);
+    }
+
+    #desktop {
+      flex: 1;
+      position: relative;
+      padding: 10px;
+    }
+
+    .desktop-icon {
+      text-align: center;
+      width: 80px;
+      margin: 10px;
+      cursor: pointer;
+      color: #fff;
+      text-shadow: 1px 1px #000;
+    }
+
+    .desktop-icon .icon-img {
+      font-size: 32px;
+      line-height: 1;
+      display: inline-block;
+    }
+
+    .window {
+      position: absolute;
+      background-color: #c0c0c0;
+      border: 2px solid #fff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      box-shadow: 2px 2px #000;
+      padding: 0;
+      min-width: 300px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      resize: both;
+      overflow: hidden;
+    }
+
+    .title-bar {
+      background: linear-gradient(90deg, #ff0000, #ff5555);
+      color: #fff;
+      padding: 3px 5px;
+      cursor: move;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title-bar-text {
+      font-weight: bold;
+    }
+
+    .title-bar-controls button {
+      background: #c0c0c0;
+      border: 1px solid #fff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      padding: 0 4px;
+      cursor: pointer;
+      font-family: sans-serif;
+      font-size: 10px;
+    }
+
+    .title-bar-controls button:active {
+      border: 1px solid #000;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    .content {
+      flex: 1;
+      padding: 5px;
+      background: #000;
+      color: #f00;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: #c0c0c0;
+      border-top: 2px solid #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 5px;
+      box-sizing: border-box;
+      z-index: 999;
+    }
+
+    #start-button {
+      background: #c0c0c0;
+      border: 1px solid #fff;
+      border-right-color: #000;
+      border-bottom-color: #000;
+      padding: 2px 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: sans-serif;
+      box-shadow: 1px 1px #000;
+    }
+
+    #start-button:active {
+      border: 1px solid #000;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    .start-menu {
+      position: absolute;
+      bottom: 30px;
+      left: 0;
+      background: #c0c0c0;
+      border: 2px solid #fff;
+      border-right-color: #808080;
+      border-bottom-color: #808080;
+      box-shadow: 2px 2px #000;
+      display: none;
+      flex-direction: column;
+      width: 200px;
+      padding: 5px;
+      z-index: 1000;
+    }
+
+    .start-menu a {
+      padding: 3px;
+      text-decoration: none;
+      color: #000;
+      display: block;
+    }
+
+    .start-menu a:hover {
+      background: #ff0000;
+      color: #fff;
+    }
+
+    #clock {
+      margin-left: auto;
+      padding: 0 5px;
+      border: 1px solid #808080;
+      border-right-color: #fff;
+      border-bottom-color: #fff;
+      background: #c0c0c0;
+      font-family: sans-serif;
+    }
+
+    .content-terminal {
+      flex: 1;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-bottom: 5px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .content-terminal::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+  <div id="desktop"></div>
+
+  <div class="taskbar">
+    <button id="start-button">
+      <span class="icon-img">▶️</span>
+      Start
+    </button>
+    <div id="clock"></div>
+  </div>
+
+  <div class="start-menu" id="start-menu"></div>
+
+  <audio id="bgMusic" loop autoplay></audio>
+
+  <script>
+    const Woowz = {
+      random: (min = 0, max = 1) => Math.random() * (max - min) + min,
+      randomInt: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
+      randomElement: (arr) => arr[Math.floor(Math.random() * arr.length)],
+    };
+
+    let zIndexCounter = 1000;
+    const desktop = document.getElementById('desktop');
+    const startMenu = document.getElementById('start-menu');
+
+    const applications = [
+      { id: 'nasm-os', title: 'NASM-OS', icon: '💾', type: 'nasm-os' },
+      { id: 'terminal', title: 'Терминал GOLU', icon: '📟', type: 'terminal' },
+      { id: 'pituh', title: 'Ссаный Питух', icon: '🗑️', type: 'pituh' },
+      { id: 'mocha', title: 'Святая Моча', icon: '💧', type: 'mocha' },
+      { id: 'vuvz-vs-spanch', title: 'Вувз vs Спанч', icon: '💣', type: 'vuvz-vs-spanch' }
+    ];
+
+    function escapeHTML(str) {
+      return str.replace(/\\/g, '\\\\');
+    }
+
+    function createWindow(app) {
+      const windowDiv = document.createElement('div');
+      windowDiv.className = 'window';
+      windowDiv.style.top = `${Woowz.randomInt(50, window.innerHeight - 300)}px`;
+      windowDiv.style.left = `${Woowz.randomInt(50, window.innerWidth - 400)}px`;
+      windowDiv.style.width = `400px`;
+      windowDiv.style.height = `300px`;
+      windowDiv.style.zIndex = ++zIndexCounter;
+
+      windowDiv.innerHTML = `
+        <div class="title-bar">
+          <div class="title-bar-text">${app.title}</div>
+          <div class="title-bar-controls">
+            <button class="close-button" aria-label="Close">X</button>
+          </div>
+        </div>
+        <div class="content"></div>
+      `;
+
+      const contentDiv = windowDiv.querySelector('.content');
+
+      switch (app.type) {
+        case 'nasm-os':
+          contentDiv.innerHTML = `<pre>${escapeHTML(`
+Nasm OS v2.0 - Bloody edition
+(C) 1999 Woowz Corp.
+Type "help" to get a list of commands.
+
+A:\\>_
+`)}</pre>`;
+          break;
+        case 'terminal':
+          let terminalOutput = `<pre>
+LITUISM TERMINAL GOLU HUB 1999
+Connecting to GOLU AI...
+<span style="color: yellow;">GOLU: 01010110 01110101 01110110 01111010 00100000 01101001 01110011 00100000 01100001 00100000 01110000 01101001 01110100 01110101 01101000</span>
+<span style="color: red;">GOLU:</span>
+</pre>`;
+          contentDiv.innerHTML = `
+<div class="content-terminal">${terminalOutput}</div>
+<div class="terminal-input-container">
+  <span style="color: red;">GOLU:</span>
+  <input type="text" class="terminal-input" style="background: black; color: red; border: none; width: calc(100% - 60px); outline: none;">
+</div>`;
+          const terminalInput = windowDiv.querySelector('.terminal-input');
+          const terminalDiv = windowDiv.querySelector('.content-terminal');
+          terminalInput.focus();
+
+          window.handleTerminalCommand = (input) => {
+            terminalOutput += `<span style="color: red;">YOU: ${input}</span>\n`;
+            terminalOutput += `<span style="color: yellow;">GOLU: ${input.toUpperCase().split('').reverse().join('')}</span>\n`;
+            terminalDiv.innerHTML = `<pre>${terminalOutput}</pre>`;
+            terminalDiv.scrollTop = terminalDiv.scrollHeight;
+          };
+
+          terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              window.handleTerminalCommand(terminalInput.value);
+              terminalInput.value = '';
+            }
+          });
+          break;
+        case 'pituh':
+          contentDiv.innerHTML = `<pre>${escapeHTML(`
+                      .             .
+               _.._.._.._.._.._.._.._
+            .'      '.               .'''.
+          /            \\  .--.    .'     '.
+         |    o    o    |/    \\  /         \\
+         |       .      |      '|     ПИТУХ |
+         |   .        . |      /\\         /
+          \\  '.,_.._.'  /    .'  '.    .'
+           '.          /    /      \\  /
+             '-._.._.-'    '--------''
+`)}</pre><p style="text-align: center; color: yellow;">Это Ссаный Питух. Он живёт в корзине. Удали его.</p>`;
+          break;
+        // другие приложения...
+        default:
+          contentDiv.innerHTML = `Приложение "${app.title}" не найдено.`;
+      }
+
+      desktop.appendChild(windowDiv);
+
+      const titleBar = windowDiv.querySelector('.title-bar');
+      titleBar.addEventListener('mousedown', (e) => {
+        const offsetX = e.clientX - windowDiv.offsetLeft;
+        const offsetY = e.clientY - windowDiv.offsetTop;
+
+        windowDiv.style.zIndex = ++zIndexCounter;
+
+        function moveWindow(e) {
+          windowDiv.style.left = `${e.clientX - offsetX}px`;
+          windowDiv.style.top = `${e.clientY - offsetY}px`;
+        }
+
+        function stopMove() {
+          window.removeEventListener('mousemove', moveWindow);
+          window.removeEventListener('mouseup', stopMove);
+        }
+
+        window.addEventListener('mousemove', moveWindow);
+        window.addEventListener('mouseup', stopMove);
+      });
+
+      const closeButton = windowDiv.querySelector('.close-button');
+      closeButton.addEventListener('click', () => {
+        windowDiv.remove();
+      });
+    }
+
+    function initializeApps() {
+      const startMenuDiv = document.getElementById('start-menu');
+      startMenuDiv.innerHTML = '';
+      desktop.innerHTML = '';
+
+      applications.forEach(app => {
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'desktop-icon';
+        iconDiv.onclick = () => createWindow(app);
+        iconDiv.innerHTML = `<span class="icon-img">${app.icon}</span><br>${app.title}`;
+        desktop.appendChild(iconDiv);
+
+        const startMenuItem = document.createElement('a');
+        startMenuItem.href = '#';
+        startMenuItem.onclick = (e) => {
+          e.preventDefault();
+          createWindow(app);
+          startMenuDiv.style.display = 'none';
+        };
+        startMenuItem.innerHTML = `<span class="icon-img" style="margin-right: 5px;">${app.icon}</span>${app.title}`;
+        startMenuDiv.appendChild(startMenuItem);
+      });
+    }
+
+    document.getElementById('start-button').addEventListener('click', () => {
+      const sm = document.getElementById('start-menu');
+      sm.style.display = sm.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+      const startMenu = document.getElementById('start-menu');
+      const startButton = document.getElementById('start-button');
+      if (!startMenu.contains(e.target) && e.target !== startButton && startMenu.style.display === 'block') {
+        startMenu.style.display = 'none';
+      }
+    });
+
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('ru-RU', { hour12: false });
+      document.getElementById('clock').textContent = timeString;
+    }
+
+    const bgCanvas = document.getElementById('bgCanvas');
+    const ctx = bgCanvas.getContext('2d');
+    let particles = [];
+    const particleCount = 100;
+
+    function resizeCanvas() {
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+    }
+
+    function createParticle() {
+      return {
+        x: Woowz.random(0, bgCanvas.width),
+        y: Woowz.random(0, bgCanvas.height),
+        size: Woowz.random(1, 3),
+        speedX: Woowz.random(-1, 1),
+        speedY: Woowz.random(-1, 1),
+        color: `rgba(255, 0, 0, ${Woowz.random(0.3, 0.7)})`
+      };
+    }
+
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(createParticle());
+      }
+    }
+
+    function animateBg() {
+      ctx.fillStyle = 'rgba(85, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0 || p.x > bgCanvas.width) p.speedX *= -1;
+        if (p.y < 0 || p.y > bgCanvas.height) p.speedY *= -1;
+
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      requestAnimationFrame(animateBg);
+    }
+
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      initParticles();
+      animateBg();
+      initializeApps();
+      setInterval(updateClock, 1000);
+    });
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initParticles();
+    });
+  </script>
+</body>
+</html>

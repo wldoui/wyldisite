@@ -1,0 +1,191 @@
+<!-- Vuvz vs Spanch: с NASM GUI, музыкой и чатом с Вувзом -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vuvz vs Spanch: Terminal Edition</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --accent: #e60023;
+      --accent-dark: #c50021;
+      --text: #1a1a1a;
+      --border: #e5e5e5;
+      --user-bg: #ffe5e9;
+      --assistant-bg: #f7f7f7;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 0;
+    }
+    .chat-card {
+      max-width: 640px;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      height: 92vh;
+      max-height: 700px;
+      margin: 10px auto;
+    }
+    header {
+      background: var(--accent);
+      color: #fff;
+      padding: 15px 25px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-align: center;
+      letter-spacing: .5px;
+    }
+    .messages {
+      flex: 1;
+      padding: 15px 25px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .msg {
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: 85%;
+      word-break: break-word;
+      font-size: .95rem;
+    }
+    .user {
+      align-self: flex-end;
+      background: var(--user-bg);
+    }
+    .ai {
+      align-self: flex-start;
+      background: var(--assistant-bg);
+    }
+    .status {
+      color: #666;
+      font-size: .9rem;
+      margin-top: 4px;
+    }
+    .input-area {
+      border-top: 1px solid var(--border);
+      padding: 15px 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    textarea {
+      resize: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1rem;
+      height: 90px;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .btn {
+      align-self: flex-end;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: .9rem;
+      cursor: pointer;
+    }
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+    footer {
+      font-size: .7rem;
+      color: #999;
+      text-align: center;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-card">
+    <header>Чат с Вувзом (AI)</header>
+    <div id="messages" class="messages"></div>
+    <div class="input-area">
+      <textarea id="q" placeholder="Ваш вопрос…"></textarea>
+      <button id="sendBtn" class="btn" disabled>Отправить</button>
+    </div>
+    <footer>Это чат-окно с Вувзом. История не сохраняется.</footer>
+  </div>
+
+  <!-- Звуковое сопровождение -->
+  <audio id="bgMusic" loop autoplay>
+    <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%91%D0%B5%D0%BB%D0%BA%D0%B0%20%D0%BD%D0%B0%20NASM.mp3" type="audio/mp3">
+  </audio>
+
+  <!-- Скрипт AI -->
+  <script src="https://woowz11.github.io/woowzsite/source/ai.js"></script>
+  <script>
+    const messagesDiv = document.getElementById('messages');
+    const qInput = document.getElementById('q');
+    const sendBtn = document.getElementById('sendBtn');
+    const bot = new WoowzAI([{ role: 'system', content: 'Ты Вувз, терминальный искусственный интеллект. Отвечай смешно, стильно, как терминальный хакер, ASCII фанат и враг Спанча. Ты обожаешь NASM, анархию и треш.' }], { remember: true });
+
+    function addMessage(role, text) {
+      const div = document.createElement('div');
+      div.className = `msg ${role}`;
+      div.textContent = text;
+      messagesDiv.appendChild(div);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    addMessage('ai', '🧠 Вувз подключён. Введи вопрос, псина.');
+
+    async function sendMessage() {
+      const q = qInput.value.trim();
+      if (!q) return;
+      sendBtn.disabled = true;
+      addMessage('user', q);
+
+      let answer = '';
+      const placeholder = document.createElement('div');
+      placeholder.className = 'msg ai status';
+      placeholder.textContent = 'Думаю…';
+      messagesDiv.appendChild(placeholder);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+      qInput.value = '';
+
+      try {
+        await bot.send(q, {
+          onChunk: (delta) => {
+            answer += delta;
+            placeholder.textContent = answer;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          },
+          onDone: () => placeholder.classList.remove('status'),
+          onStage: (stage) => {
+            if (stage === 'thinking') placeholder.textContent = 'Думаю…';
+          }
+        });
+      } catch (err) {
+        placeholder.textContent = 'Ошибка: ' + err.message;
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    sendBtn.onclick = sendMessage;
+    sendBtn.disabled = false;
+  </script>
+</body>
+</html>

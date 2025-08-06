@@ -1,0 +1,229 @@
+<!-- Vuvz vs Spanch: с NASM GUI и новой музыкой -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vuvz vs Spanch: Terminal Edition</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #container {
+      display: flex;
+      flex: 1;
+      gap: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    #terminal, #vuldiWindow, #nasmOS {
+      flex: 1;
+      background: #000;
+      border: 2px solid #0f0;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    #output, #vuldiOutput, #nasmOutput {
+      flex: 1;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      margin-bottom: 5px;
+    }
+    #input {
+      background: transparent;
+      border: none;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 1em;
+      outline: none;
+      width: 100%;
+    }
+    #gameWrapper {
+      flex: 2;
+      background: #000;
+      border: 2px solid #0f0;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #asciiGame, #mapCanvas {
+      background: #111;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px;
+      height: 180px;
+      overflow-y: auto;
+      white-space: pre;
+    }
+    #musicControls {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      background: #000;
+      border: 1px solid #0f0;
+      color: #0f0;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 1em;
+    }
+    button:hover {
+      background: #0f0;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <div id="terminal">
+    <div id="output">Добро пожаловать в Vuvz vs Spanch: Terminal Edition!</div>
+    <input id="input" type="text" autocomplete="off" autofocus />
+  </div>
+
+  <div id="gameWrapper">
+    <div id="asciiGame"></div>
+    <div id="mapCanvas"></div>
+    <div id="musicControls">
+      <button id="btnPlay">▶</button>
+      <button id="btnPause">⏸</button>
+      <button id="btnChange">🎵</button>
+    </div>
+  </div>
+
+  <div id="vuldiWindow">
+    <div id="vuldiOutput"></div>
+  </div>
+
+  <div id="nasmOS">
+    <div id="nasmOutput">🪟 NASM-OS v98
+┌───────────────────────────────┐
+│ Программы:                   │
+│ [1] Взлом Вувза              │
+│ [2] Пинг VuvzServer.exe      │
+│ [3] Lita Compiler Pro        │
+└───────────────────────────────┘
+Введите номер команды...
+</div>
+  </div>
+</div>
+
+<audio id="bgMusic" loop autoplay>
+  <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%91%D0%B5%D0%BB%D0%BA%D0%B0%20%D0%BD%D0%B0%20NASM.mp3" type="audio/mp3">
+</audio>
+
+<script>
+  const output = document.getElementById('output');
+  const input = document.getElementById('input');
+  const asciiGame = document.getElementById('asciiGame');
+  const mapCanvas = document.getElementById('mapCanvas');
+  const vuldiOutput = document.getElementById('vuldiOutput');
+  const nasmOutput = document.getElementById('nasmOutput');
+  const bgMusic = document.getElementById('bgMusic');
+
+  const tracks = [
+    "https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%91%D0%B5%D0%BB%D0%BA%D0%B0%20%D0%BD%D0%B0%20NASM.mp3",
+    "https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%AF%20%D0%A5%D0%9E%D0%A7%D0%A3%20%D0%A1%D0%A2%D0%90%D0%A2%D0%AC%20%D0%98%D0%93%D0%A0%D0%9E%D0%99.mp3",
+    "https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%9F%D0%98%D0%98%D0%98%D0%98%D0%98%D0%98%D0%9F%E2%80%94%D0%9A%D0%A0%D0%A0%D0%A0%E2%80%94%D0%9F%D0%98%D0%98%D0%98%E2%80%94%D0%92%D0%A3%D0%9B%D0%94%D0%98...%20%D0%92%D0%9E%D0%99%D0%9D%D0%90%20%D0%9D%D0%90%D0%A7%D0%90%D0%9B.mp3"
+  ];
+  let currentTrack = 0;
+  let sceneCounter = 0;
+
+  const asciiScenes = [
+    `🧽 \n  (\__/)
+  (•ㅅ•)    Спанч вылез из унитаза!
+  / 　 づ`,
+    `💨 \n  Вувз: "АААААА!"\n  _\\|//_
+  ( °_°)  БЕГУ!\n  /|   |\n   / \\`,
+    `💥 \n  *BLAM*\n  \n  Спанч: "СКРИИИИИМ!"`,
+    `🧠 \n  Вувз хакнул NASM\n  [code injection detected]`,
+  ];
+
+  function updateAsciiGame() {
+    asciiGame.textContent = asciiScenes[sceneCounter % asciiScenes.length];
+    sceneCounter++;
+  }
+  setInterval(updateAsciiGame, 2500);
+
+  function appendTerminal(text) {
+    output.textContent += `\n${text}`;
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function processCommand(cmd) {
+    const c = cmd.trim().toLowerCase();
+    switch (c) {
+      case 'help':
+        appendTerminal('Команды: move, shoot, hack, infect <target>, clear');
+        break;
+      case 'clear':
+        output.textContent = '';
+        break;
+      case 'shoot':
+        appendTerminal('💥 Вувз стреляет! Спанч визжит.');
+        break;
+      case 'hack':
+        appendTerminal('🧠 Вувз использует NASM-хак. Вулди хохочет.');
+        showVuldiDestruction();
+        break;
+      case 'move':
+        appendTerminal('🚶 Вувз меняет позицию...');
+        break;
+      default:
+        if (c.startsWith('infect')) {
+          appendTerminal(`🦠 Заражение начато в ${c.split(' ')[1].toUpperCase()}`);
+        } else {
+          appendTerminal(`Неизвестная команда: ${cmd}`);
+        }
+    }
+  }
+
+  function showVuldiDestruction() {
+    const files = [
+      "System32.dll", "nudes_from_GOLU.png", "vuldi_soul.exe",
+      "brain.class", "game.idea", "hope.sys"
+    ];
+    let index = 0;
+    const timer = setInterval(() => {
+      if (index < files.length) {
+        vuldiOutput.textContent += `Удаляется: ${files[index++]} ... [ОК]\n`;
+      } else {
+        clearInterval(timer);
+        vuldiOutput.textContent += "Я жив я вулди я крутой: Делай игры на WyldiEngine, псина!";
+      }
+    }, 400);
+  }
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const val = input.value;
+      appendTerminal('> ' + val);
+      processCommand(val);
+      input.value = '';
+    }
+  });
+
+  document.getElementById('btnPlay').onclick = () => bgMusic.play();
+  document.getElementById('btnPause').onclick = () => bgMusic.pause();
+  document.getElementById('btnChange').onclick = () => {
+    currentTrack = (currentTrack + 1) % tracks.length;
+    bgMusic.src = tracks[currentTrack];
+    bgMusic.play();
+  };
+
+  mapCanvas.textContent = `🌍 ЗАРАЖЕНИЕ ПЛАНЕТЫ:\n[🌐] Earth  ███▓░░░░░░░░░░░░ 30%\n[🪐] Mars   ██▓░░░░░░░░░░░░ 20%\n[🌒] Moon   ████▓▓▓░░░░░░░░ 50%\n[☄️] Titan  ███████░░░░░░░ 70%\n\nВыберите точку заражения: infect earth/mars/moon/titan\n`;
+</script>
+
+</body>
+</html>

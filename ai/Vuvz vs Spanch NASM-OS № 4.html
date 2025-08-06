@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vuvz vs Spanch: NASM-OS</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #008080;
+            font-family: 'MS Sans Serif', 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        #desktop {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        .window {
+            position: absolute;
+            background-color: #c0c0c0;
+            border: 2px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            box-shadow: 2px 2px #000;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-width: 300px;
+            min-height: 200px;
+            resize: both;
+            overflow: hidden;
+        }
+        .title-bar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: #fff;
+            padding: 3px 5px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .title-bar-text {
+            font-weight: bold;
+        }
+        .title-bar-controls button {
+            background: #c0c0c0;
+            border: 1px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            padding: 0 4px;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+            font-size: 10px;
+        }
+        .content {
+            flex: 1;
+            padding: 5px;
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-terminal {
+            flex: 1;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-bottom: 5px;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .content-terminal::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera*/
+        }
+        .content-input {
+            background: transparent;
+            border: none;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            outline: none;
+            width: 100%;
+        }
+        .chat-box {
+            border-top: 1px solid #0f0;
+            padding-top: 5px;
+        }
+        #start-menu {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background: #c0c0c0;
+            border: 2px solid #fff;
+            border-top-color: #808080;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+        #start-button {
+            font-weight: bold;
+            background: #c0c0c0;
+            border: 1px solid #fff;
+            border-right-color: #000;
+            border-bottom-color: #000;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .program-list {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background: #c0c0c0;
+            border: 2px solid #fff;
+            border-right-color: #808080;
+            border-bottom-color: #808080;
+            display: none;
+            padding: 5px;
+            width: 200px;
+            box-shadow: 2px 2px #000;
+        }
+        .program-list a {
+            display: block;
+            padding: 3px;
+            text-decoration: none;
+            color: #000;
+            font-family: 'MS Sans Serif', sans-serif;
+            cursor: pointer;
+        }
+        .program-list a:hover {
+            background-color: #000080;
+            color: #fff;
+        }
+        #clock {
+            position: absolute;
+            right: 10px;
+            bottom: 5px;
+            font-size: 0.9em;
+            color: #000;
+        }
+        .music-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+    <script src="https://woowz11.github.io/woowzsite/source/ai.js"></script>
+</head>
+<body>
+
+<div id="desktop">
+    </div>
+
+<div id="start-menu">
+    <div id="start-button">
+        <span>Начать</span>
+    </div>
+    <div class="program-list">
+        <a href="#" onclick="createWindow('NASM-OS v98', 'nasm');">💻 NASM-OS v98</a>
+        <a href="#" onclick="createWindow('Vuvz vs Spanch', 'game');">👾 Vuvz vs Spanch</a>
+        <a href="#" onclick="createWindow('Vuldi Engine', 'vuldi');">💡 Vuldi Engine</a>
+        <a href="#" onclick="createWindow('Вувзсайты', 'browser');">🌐 Вувзсайты</a>
+        <a href="#" onclick="createWindow('Музыка', 'music');">🎶 Музыка</a>
+    </div>
+    <div id="clock"></div>
+</div>
+
+<audio id="bgMusic" loop autoplay>
+    <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%91%D0%B5%D0%BB%D0%BA%D0%B0%20%D0%BD%D0%B0%20NASM.mp3" type="audio/mp3">
+    <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/%D0%92%D1%83%D0%B2%D0%B7%20%D0%BD%D0%B5%20%D0%B4%D0%B0%D1%81%D1%82%20%D0%92%D0%B0%D0%BC%20%D1%81%D0%BF%D0%BE%D0%BA%D0%BE%D0%B9%D0%BD%D0%BE%20%D1%81%D0%BF%D0%B0%D1%82%D1%8C.mp3" type="audio/mp3">
+    <source src="https://woowz11.github.io/woowzsite/source/specialforrandomsite/ai_music_hits_pro/Vuvz%20Theme%20Pro.mp3" type="audio/mp3">
+</audio>
+
+<script>
+const desktop = document.getElementById('desktop');
+const startButton = document.getElementById('start-button');
+const programList = document.querySelector('.program-list');
+const clock = document.getElementById('clock');
+const bgMusic = document.getElementById('bgMusic');
+const tracks = [...document.querySelectorAll('#bgMusic source')].map(s => s.src);
+let currentTrackIndex = 0;
+let sceneCounter = 0;
+const ai = new window.WoowzAI([], { remember: true });
+
+const asciiScenes = [
+    `
+    🧽 Спанч-унитаз-хакер!
+    
+    (\__/)
+    (•ㅅ•)
+    / 　 づ
+    
+    Спанч: "Я ТЕБЯ ВЗЛОМАЮ!"
+    `,
+    `
+    💨 Вувз:
+    "АААААААААА!"
+    _\\|//_
+    ( °_°)
+    /|  |
+    / \\
+    `,
+    `
+    💥 *BLAM*
+    💀 Спанч
+    "СКРИИИИИИИМ!"
+    `,
+    `
+    🧠 Вувз хакает
+    
+    [code injection detected]
+    `,
+    `
+    💻 HACKING IN PROGRESS
+    [====================] 100%
+    Прохор Корякин - взломан
+    `
+];
+
+const infectionLevels = {
+    earth: 30,
+    mars: 20,
+    moon: 50,
+    titan: 70
+};
+
+function updateAsciiGame(container) {
+    container.innerHTML = `<pre>${asciiScenes[sceneCounter % asciiScenes.length]}</pre>`;
+    sceneCounter++;
+}
+
+function processTerminalCommand(cmd, outputElement) {
+    const c = cmd.trim().toLowerCase();
+    outputElement.innerHTML += `> ${cmd}\n`;
+    switch (c) {
+        case 'help':
+            outputElement.innerHTML += 'Команды: move, shoot, hack, infect <target>, clear';
+            break;
+        case 'clear':
+            outputElement.innerHTML = '';
+            break;
+        case 'shoot':
+            outputElement.innerHTML += '💥 Вувз стреляет! Спанч визжит.';
+            break;
+        case 'hack':
+            outputElement.innerHTML += '🧠 Вувз использует NASM-хак. Вулди хохочет.';
+            showVuldiDestruction(document.querySelector('#vuldiOutput'));
+            break;
+        case 'move':
+            outputElement.innerHTML += '🚶 Вувз меняет позицию...';
+            break;
+        default:
+            if (c.startsWith('infect')) {
+                const target = c.split(' ')[1];
+                if (target && infectionLevels[target]) {
+                    outputElement.innerHTML += `🦠 Заражение начато в ${target.toUpperCase()}`;
+                    updateMap(target);
+                } else {
+                    outputElement.innerHTML += 'Укажите цель: infect <earth/mars/moon/titan>';
+                }
+            } else {
+                outputElement.innerHTML += `Неизвестная команда: ${cmd}`;
+            }
+    }
+    outputElement.scrollTop = outputElement.scrollHeight;
+}
+
+function showVuldiDestruction(outputElement) {
+    const files = [
+        "System32.dll", "nudes_from_GOLU.png", "vuldi_soul.exe",
+        "brain.class", "game.idea", "hope.sys"
+    ];
+    let index = 0;
+    outputElement.innerHTML = '';
+    const timer = setInterval(() => {
+        if (index < files.length) {
+            outputElement.innerHTML += `Удаляется: ${files[index++]} ... [ОК]\n`;
+        } else {
+            clearInterval(timer);
+            outputElement.innerHTML += "Я жив я вулди я крутой: Делай игры на WyldiEngine, псина!";
+        }
+    }, 400);
+}
+
+function updateMap(target) {
+    if (infectionLevels[target]) {
+        infectionLevels[target] = Math.min(100, infectionLevels[target] + 10);
+    }
+    updateMapDisplay();
+}
+
+function updateMapDisplay() {
+    const mapContent = `
+🌍 ЗАРАЖЕНИЕ ПЛАНЕТЫ:
+[🌐] Earth  ${'▓'.repeat(infectionLevels.earth/10)}░░░░░░░░░░ ${infectionLevels.earth}%
+[🪐] Mars   ${'▓'.repeat(infectionLevels.mars/10)}░░░░░░░░░░ ${infectionLevels.mars}%
+[🌒] Moon   ${'▓'.repeat(infectionLevels.moon/10)}░░░░░░░░░░ ${infectionLevels.moon}%
+[☄️] Titan  ${'▓'.repeat(infectionLevels.titan/10)}░░░░░░░░░░ ${infectionLevels.titan}%
+
+Выберите точку заражения: infect earth/mars/moon/titan
+    `;
+    const mapContainer = document.querySelector('.map-canvas');
+    if (mapContainer) {
+        mapContainer.innerHTML = `<pre>${mapContent}</pre>`;
+    }
+}
+
+function createWindow(title, type) {
+    const windowDiv = document.createElement('div');
+    windowDiv.className = 'window';
+    windowDiv.style.left = `${Math.random() * 200 + 50}px`;
+    windowDiv.style.top = `${Math.random() * 100 + 50}px`;
+    windowDiv.innerHTML = `
+        <div class="title-bar">
+            <div class="title-bar-text">${title}</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize" onclick="this.closest('.window').style.display='none';"></button>
+                <button aria-label="Maximize" onclick="this.closest('.window').classList.toggle('maximized');"></button>
+                <button aria-label="Close" onclick="this.closest('.window').remove();"></button>
+            </div>
+        </div>
+        <div class="content"></div>
+    `;
+
+    const contentDiv = windowDiv.querySelector('.content');
+
+    if (type === 'nasm') {
+        contentDiv.innerHTML = `
+            <div id="nasmOutput" class="content-terminal">
+                🪟 NASM-OS v98 Wyldi Edition
+┌───────────────────────────────┐
+│ 💻 [1] Взлом Вувза             │
+│ 🚀 [2] Пинг VuvzServer.exe    │
+│ 💡 [3] Lita Compiler Pro      │
+│ 🌐 [4] Просмотр Вувзсайтов      │
+└───────────────────────────────┘
+Введите номер команды...
+            </div>
+            <div class="chat-box">
+                <div id="chatLog" class="content-terminal"></div>
+                <input id="chatInput" class="content-input" placeholder="Спросить Вувза..." />
+            </div>
+        `;
+
+        const chatInput = contentDiv.querySelector('#chatInput');
+        const chatLog = contentDiv.querySelector('#chatLog');
+
+        chatInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const val = chatInput.value.trim();
+                if (!val) return;
+                chatLog.innerHTML += `\n[Вы]: ${val}`;
+                chatInput.value = '';
+                const reply = await ai.sendSync(val);
+                chatLog.innerHTML += `\n[Вувз]: ${reply}`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }
+        });
+
+    } else if (type === 'game') {
+        contentDiv.innerHTML = `
+            <div class="game-wrapper" style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+                <div class="ascii-game content-terminal" style="flex: 1; border: 1px solid #0f0; padding: 10px;"></div>
+                <div class="map-canvas content-terminal" style="flex: 1; border: 1px solid #0f0; padding: 10px;"></div>
+            </div>
+        `;
+        const asciiGame = contentDiv.querySelector('.ascii-game');
+        setInterval(() => updateAsciiGame(asciiGame), 2500);
+        updateMapDisplay();
+    } else if (type === 'vuldi') {
+        contentDiv.innerHTML = `
+            <div id="vuldiOutput" class="content-terminal">
+                <pre>Добро пожаловать в Vuldi Engine v1.1.2</pre>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span>></span><input class="content-input" type="text" autocomplete="off" />
+            </div>
+        `;
+        const input = contentDiv.querySelector('input');
+        const output = contentDiv.querySelector('#vuldiOutput');
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const val = input.value;
+                processTerminalCommand(val, output);
+                input.value = '';
+            }
+        });
+    } else if (type === 'browser') {
+        contentDiv.innerHTML = `
+            <div style="height: 100%; display: flex; flex-direction: column; background: #c0c0c0;">
+                <input class="content-input" placeholder="Введите URL вувзсайта (например, https://woowz11.github.io/woowzsite/)..." style="background: #fff; border: 1px solid #000; padding: 5px; margin-bottom: 5px; color: #000;" />
+                <iframe style="flex: 1; border: 1px solid #000; background: #fff;"></iframe>
+            </div>
+        `;
+        const input = contentDiv.querySelector('input');
+        const iframe = contentDiv.querySelector('iframe');
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                iframe.src = input.value;
+            }
+        });
+    } else if (type === 'music') {
+        contentDiv.innerHTML = `
+            <div class="music-controls">
+                <button onclick="bgMusic.play()">▶</button>
+                <button onclick="bgMusic.pause()">⏸</button>
+                <button onclick="changeTrack()">🎵</button>
+                <span id="currentTrackInfo"></span>
+            </div>
+        `;
+        const currentTrackInfo = contentDiv.querySelector('#currentTrackInfo');
+        const updateTrackInfo = () => {
+            const trackName = tracks[currentTrackIndex].split('/').pop().replace('.mp3', '');
+            currentTrackInfo.textContent = `Сейчас играет: ${decodeURIComponent(trackName)}`;
+        };
+        updateTrackInfo();
+    }
+
+    desktop.appendChild(windowDiv);
+    makeWindowDraggable(windowDiv);
+}
+
+function makeWindowDraggable(windowElement) {
+    let isDragging = false;
+    let offsetX, offsetY;
+    const titleBar = windowElement.querySelector('.title-bar');
+
+    titleBar.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - windowElement.offsetLeft;
+        offsetY = e.clientY - windowElement.offsetTop;
+        windowElement.style.zIndex = getHighestZIndex() + 1;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            windowElement.style.left = `${e.clientX - offsetX}px`;
+            windowElement.style.top = `${e.clientY - offsetY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+}
+
+function getHighestZIndex() {
+    const windows = document.querySelectorAll('.window');
+    let maxZIndex = 0;
+    windows.forEach(win => {
+        const zIndex = parseInt(window.getComputedStyle(win).zIndex);
+        if (!isNaN(zIndex) && zIndex > maxZIndex) {
+            maxZIndex = zIndex;
+        }
+    });
+    return maxZIndex;
+}
+
+function changeTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+    bgMusic.src = tracks[currentTrackIndex];
+    bgMusic.play();
+    const currentTrackInfo = document.querySelector('#currentTrackInfo');
+    if (currentTrackInfo) {
+        const trackName = tracks[currentTrackIndex].split('/').pop().replace('.mp3', '');
+        currentTrackInfo.textContent = `Сейчас играет: ${decodeURIComponent(trackName)}`;
+    }
+}
+
+startButton.addEventListener('click', () => {
+    programList.style.display = programList.style.display === 'block' ? 'none' : 'block';
+});
+
+setInterval(() => {
+    const now = new Date();
+    clock.textContent = now.toLocaleTimeString();
+}, 1000);
+
+document.addEventListener('DOMContentLoaded', () => {
+    createWindow('NASM-OS v98', 'nasm');
+    createWindow('Vuvz vs Spanch', 'game');
+    createWindow('Vuldi Engine', 'vuldi');
+});
+</script>
+</body>
+</html>
