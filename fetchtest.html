@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch</title>
+</head>
+<body>
+    <input type="text" id="command-input" placeholder="Введите команду...">
+
+
+    <script>
+        let arts = [
+            {
+                name: "лаборатория",
+                ascii: `
+                +-----------------+
+                |                 |
+                |                 |
+                |\\               /|
+                | \\_ _       _ _/ |
+                |    | |    | |   |
+                +-----------------+
+                `,
+                description: "Описание лабы)",
+                items: ["пробирка", "колба"],
+                itemsDescription: ["старая пыльная пробирка", "старая сломанная колба"],
+                locEntities: ["тень", "поедатель", "огорчённый", "призрак"],
+                exits: ["коридор"],
+                canHide: true
+            },
+            {
+                name: "коридор",
+                ascii: `
+                +-----------------+
+                | \\             / |
+                |    \\       /    |
+                |      +---+      |
+                |      |   |      |
+                |      |   |      |
+                +-----------------+
+                `,
+                description: "Длинный коридор с множеством дверей.",
+                items: ["ключ", "записка"],
+                itemsDescription: ["ржавый ключ", "старая записка"],
+                locEntities: ["тень", "призрак"],
+                exits: ["лаборатория"],
+                canHide: false
+            }
+        ];
+
+        let entities = [
+            {
+                name: "Поедатель",
+                ascii: `
+                  .------.
+                 /  ~ ~  \\
+                |  /  _  \\ |
+                | |  / \\  | |
+                 \\ \\___/  /
+                  '-------'
+                `,
+                dialogue: [
+                    "Вы не понимаете, что оно говорит.",
+                    "Скрытые записи о вас..."
+                ],
+                hostileDialogue: [
+                    "Вы не должны были возвращаться.",
+                    "Ваши сны обречены..."
+                ]
+            },
+            {
+                name: "Тень",
+                ascii: `
+                      .--.
+                    .--'    '---.
+                   .'                '.
+                 /                    \\
+                :                      :
+                |                      |
+                :                      :
+                 \\                    /
+                   '.__              _.'
+                        '---._____.---'
+                `,
+                dialogue: [
+                    "Оно следует за вами в темноте.",
+                    "Шёпот в ночи..."
+                ],
+                hostileDialogue: [
+                    "Вы не скроетесь от меня.",
+                    "Ваши страхи реальны..."
+                ]
+            },
+            {
+                name: "Огорчённый",
+                ascii: `
+                      .-""""""-.
+                     .'          '.
+                   /   O      O   \\
+                  :           \\    :
+                  |                |
+                  :    .------.    :
+                   \\  '        '  /
+                     '.          .'
+                       '-......-'
+                `,
+                dialogue: [
+                    "Вы не пройдёте без разрешения.",
+                    "Защитник тайн..."
+                ],
+                hostileDialogue: [
+                    "Вы не должны были возвращаться.",
+                    "Ваши сны обречены..."
+                ]
+            },
+            {
+                name: "Призрак",
+                ascii: `
+                      .-.
+                     (   )
+                    .-'-'-.
+                   .-         -.
+                 .'             '.
+                 |    О     О    |
+                 |     -     -    |
+                 |      '._.'     |
+                 |               |
+                  '._         _.'
+                      '-.....-'
+                `,
+                dialogue: [
+                    "Его голос эхом разносится по коридорам.",
+                    "Потерянные души..."
+                ],
+                hostileDialogue: [
+                    "Вы не скроетесь от меня.",
+                    "Ваши страхи реальны..."
+                ]
+            }
+        ];
+
+        let currentLocation = "лаборатория";
+        let inventory = [];
+        let currentEntity = null;
+        let dreamMentions = 0;
+
+        function getAsciiArtByName(name) {
+            let art = arts.find(item => item.name === name);
+            return art ? art.ascii : "ASCII-арт не найден";
+        }
+
+        function getDescriptionByName(name) {
+            let location = arts.find(item => item.name === name);
+            return location ? location.description : "Описание не найдено";
+        }
+
+        function getItemDescription(itemName) {
+            let location = arts.find(loc => loc.items.includes(itemName));
+            if (location) {
+                let index = location.items.indexOf(itemName);
+                if (index !== -1) {
+                    return location.itemsDescription[index];
+                }
+            }
+            return "Описание предмета не найдено";
+        }
+
+        function updateAsciiArt() {
+            let asciiArt = currentEntity ? currentEntity.ascii : getAsciiArtByName(currentLocation);
+            document.getElementById('ascii-art').innerHTML = `<pre>${asciiArt}</pre>`;
+        }
+
+        function executeCommand() {
+            let input = document.getElementById('command-input').value.toLowerCase();
+            let words = input.split(' ');
+            let command = words[0];
+            let consoleDiv = document.getElementById('console');
+
+            if (command === "осмотреть") {
+                if (words[1] === currentLocation) {
+                    if (Math.random() < 0.3 && !currentEntity) {
+                        spawnEntity();
+                    } else {
+                        consoleDiv.innerHTML += `<center><p>${getDescriptionByName(currentLocation)}</p></center>`;
+                    }
+                } else if (inventory.includes(words[1])) {
+                    consoleDiv.innerHTML += `<center><p>${getItemDescription(words[1])}</p></center>`;
+                } else {
+                    consoleDiv.innerHTML += `<center><p>Вы не можете осмотреть "${words[1]}". У вас его нет.</p></center>`;
+                }
+            } else if (command === "идти" && words[1]) {
+                let newLocation = words[1];
+                if (canMoveTo(newLocation)) {
+                    changeLocation(newLocation);
+                } else {
+                    consoleDiv.innerHTML += `<center><p>Из "${currentLocation}" нет выхода в "${newLocation}".</p></center>`;
+                }
+            } else if (command === "взять" && words[1]) {
+                let item = words[1];
+                if (isItemInLocation(item) && !inventory.includes(item)) {
+                    inventory.push(item);
+                    consoleDiv.innerHTML += `<center><p>Вы взяли ${item}.</p></center>`;
+                } else if (inventory.includes(item)) {
+                    consoleDiv.innerHTML += `<center><p>У вас уже есть ${item}.</p></center>`;
+                } else {
+                    consoleDiv.innerHTML += `<center><p>${item} здесь нет.</p></center>`;
+                }
+            } else if (command === "игнорировать" && currentEntity) {
+                ignoreEntity(consoleDiv);
+            } else if (command === "поговорить" && currentEntity) {
+                talkToEntity(consoleDiv);
+            } else if (command === "спрятаться" && currentEntity) {
+                hideFromEntity(consoleDiv);
+            } else {
+                consoleDiv.innerHTML += `<center><p>Неизвестная команда.</p></center>`;
+            }
+        }
+
+        function spawnEntity() {
+            let possibleEntities = arts.find(loc => loc.name === currentLocation).locEntities;
+            if (possibleEntities.length > 0) {
+                let entityName = possibleEntities[Math.floor(Math.random() * possibleEntities.length)];
+                currentEntity = entities.find(ent => ent.name.toLowerCase() === entityName);
+                document.getElementById('console').innerHTML += `<center><p>${currentEntity.name} появился перед вами!</p></center>`;
+                updateAsciiArt();
+            }
+        }
+
+        function ignoreEntity(consoleDiv) {
+            if (Math.random() < 0.5) {
+                if (Math.random() < 0.2) {
+                    gameOver(consoleDiv);
+                } else {
+                    startDialogue(consoleDiv, false);
+                }
+            } else {
+                currentEntity = null;
+                updateAsciiArt();
+                consoleDiv.innerHTML += `<center><p>Сущность ушла.</p></center>`;
+            }
+        }
+
+        function talkToEntity(consoleDiv) {
+            startDialogue(consoleDiv, true);
+        }
+
+        function hideFromEntity(consoleDiv) {
+            if (arts.find(loc => loc.name === currentLocation).canHide) {
+                currentEntity = null;
+                updateAsciiArt();
+                consoleDiv.innerHTML += `<center><p>Вы успешно спрятались.</p></center>`;
+            } else {
+                consoleDiv.innerHTML += `<center><p>Здесь негде спрятаться.</p></center>`;
+            }
+        }
+
+        function startDialogue(consoleDiv, isHostile) {
+            let dialogue = isHostile ? currentEntity.hostileDialogue : currentEntity.dialogue;
+            let message = dialogue[Math.floor(Math.random() * dialogue.length)];
+            consoleDiv.innerHTML += `<center><p>${currentEntity.name}: "${message}"</p></center>`;
+
+            if (!isHostile) {
+                consoleDiv.innerHTML += `<center><p>Введите ответ:</p></center>`;
+                document.getElementById('command-input').onkeydown = function(event) {
+                    if (event.key === "Enter") {
+                        let response = document.getElementById('command-input').value.toLowerCase();
+                        if (response.includes("сон") || response.includes("сны")) {
+                            dreamMentions++;
+                            if (dreamMentions >= 3) {
+                                consoleDiv.innerHTML += `<center><p>${currentEntity.name} исчезает...</p></center>`;
+                                currentEntity = null;
+                                updateAsciiArt();
+                            } else {
+                                startDialogue(consoleDiv, false);
+                            }
+                        } else {
+                            if (Math.random() < 0.2) {
+                                gameOver(consoleDiv);
+                            } else {
+                                currentEntity = null;
+                                updateAsciiArt();
+                                consoleDiv.innerHTML += `<center><p>Сущность ушла.</p></center>`;
+                            }
+                        }
+                        document.getElementById('command-input').onkeydown = null;
+                    }
+                };
+            }
+        }
+
+        function gameOver(consoleDiv) {
+            consoleDiv.innerHTML += `<center><p>Вы погибли...</p></center>`;
+            setTimeout(() => location.reload(), 3000);
+        }
+
+        function isItemInLocation(item) {
+            let currentItems = arts.find(loc => loc.name === currentLocation).items;
+            return currentItems.includes(item);
+        }
+
+        function canMoveTo(newLocation) {
+            let currentExits = arts.find(loc => loc.name === currentLocation).exits;
+            return currentExits.includes(newLocation);
+        }
+
+        function changeLocation(newLocation) {
+            if (arts.some(loc => loc.name === newLocation)) {
+                currentLocation = newLocation;
+                currentEntity = null;
+                updateAsciiArt();
+                document.getElementById('console').innerHTML += `<center><p>Вы переместились в ${currentLocation}.</p></center>`;
+            } else {
+                document.getElementById('console').innerHTML += `<center><p>Локация "${newLocation}" не найдена.</p></center>`;
+            }
+        }
+
+        // Обновляем ASCII-арт при загрузке страницы
+        updateAsciiArt();
+    </script>
+</body>
+</html>

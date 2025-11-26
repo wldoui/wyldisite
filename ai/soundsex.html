@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Image → Sound — Веб-инструмент</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#60a5fa}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#071022 0%,#081128 100%);color:#e6eef8}
+    .wrap{max-width:960px;margin:32px auto;padding:20px;background:rgba(255,255,255,0.02);border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:20px}
+    .controls{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:18px}
+    .left{padding:12px;background:rgba(255,255,255,0.02);border-radius:10px}
+    .right{padding:12px;background:rgba(255,255,255,0.01);border-radius:10px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=file]{display:block}
+    canvas{max-width:100%;border-radius:8px;background:#071226;display:block}
+    .row{display:flex;gap:10px;align-items:center}
+    button{background:var(--accent);border:none;padding:10px 12px;border-radius:8px;color:#04233b;font-weight:600;cursor:pointer}
+    select,input[type=range]{width:100%}
+    .small{font-size:13px;color:var(--muted)}
+    footer{margin-top:18px;font-size:13px;color:var(--muted)}
+    .option{margin-bottom:12px}
+  </style>
+</head>
+<body>
+<iframe frameborder="0" allow="clipboard-write" style="border:none;width:614px;height:556px;" width="614" height="556" src="https://music.yandex.ru/iframe/playlist/woowz12/1006">Слушайте <a href="https://music.yandex.ru/playlists/17c81229-b692-a2f9-82b0-f6595454f682">Happycore/Bootleg 😁</a> — <a href="https://music.yandex.ru/users/woowz12">woowz12</a> на Яндекс Музыке</iframe>
+  <div class="wrap">
+    <header>
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <rect x="1" y="1" width="22" height="22" rx="6" fill="#0b1220" stroke="#1f2937"/>
+        <path d="M6 8h12M8 12h8M10 16h4" stroke="#60a5fa" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Image → Sound — преобразуй картинку в звук</h1>
+        <div class="small">Загрузите изображение, выберите способ маппинга пикселей на звук и нажмите «Play».</div>
+      </div>
+    </header>
+
+    <div class="controls">
+      <div class="left">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+          <div style="flex:1">
+            <label for="imageLoader">Загрузить изображение</label>
+            <input id="imageLoader" type="file" accept="image/*">
+          </div>
+          <div style="width:120px">
+            <label class="small">Размер канвы</label>
+            <select id="canvasSize">
+              <option value="512">512px</option>
+              <option value="768">768px</option>
+              <option value="1024">1024px</option>
+            </select>
+          </div>
+        </div>
+
+        <canvas id="imgCanvas" width="512" height="256"></canvas>
+
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button id="playBtn">Play</button>
+          <button id="stopBtn" style="background:#f43f5e;color:white">Stop</button>
+          <button id="downloadWav" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)">Download WAV</button>
+        </div>
+
+        <div style="margin-top:10px;color:var(--muted);font-size:13px">Примечание: звук генерируется в реальном времени через Web Audio API. Для длительных звуков лучше уменьшить ширину канвы.</div>
+      </div>
+
+      <div class="right">
+        <div class="option">
+          <label>Режим маппинга</label>
+          <select id="mode">
+            <option value="brightness">Яркость → Частота (по x времени)</option>
+            <option value="hue">Цвет (оттенок) → Частота</option>
+            <option value="rgb">R/G/B в три голоса</option>
+          </select>
+        </div>
+
+        <div class="option">
+          <label>Базовая частота (Hz)</label>
+          <input id="baseFreq" type="number" value="220" min="20" max="2000">
+        </div>
+
+        <div class="option">
+          <label>Темп — длительность столбца (ms)</label>
+          <input id="colDuration" type="range" min="5" max="200" value="30">
+          <div class="small">Текущее: <span id="colDurVal">30</span> ms</div>
+        </div>
+
+        <div class="option">
+          <label>Волна</label>
+          <select id="waveform"><option>sine</option><option>square</option><option>sawtooth</option><option>triangle</option></select>
+        </div>
+
+        <div class="option">
+          <label>Громкость</label>
+          <input id="masterGain" type="range" min="0" max="1" step="0.01" value="0.6">
+        </div>
+
+        <div class="option">
+          <label>Сетка: агрегация пикселей по вертикали (pixels per bin)</label>
+          <input id="vBin" type="number" value="1" min="1" max="64">
+        </div>
+
+      </div>
+    </div>
+
+    <footer>
+      Краткая инструкция: загрузите картинку → настройте параметры → нажмите Play. Кнопка "Download WAV" сохранит сгенерированный звук (примерно в длине равен числу столбцов × длительность).
+    </footer>
+  </div>
+
+  <script>
+  // Полный самодостаточный код — никаких placeholder'ов
+  (function(){
+    const imageLoader = document.getElementById('imageLoader');
+    const canvas = document.getElementById('imgCanvas');
+    const ctx = canvas.getContext('2d');
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const downloadWav = document.getElementById('downloadWav');
+    const mode = document.getElementById('mode');
+    const baseFreqEl = document.getElementById('baseFreq');
+    const colDuration = document.getElementById('colDuration');
+    const colDurVal = document.getElementById('colDurVal');
+    const waveform = document.getElementById('waveform');
+    const masterGainEl = document.getElementById('masterGain');
+    const canvasSize = document.getElementById('canvasSize');
+    const vBin = document.getElementById('vBin');
+
+    let audioCtx = null;
+    let masterGain = null;
+    let scheduledOscillators = [];
+    let imageBitmap = null;
+    let lastBuffer = null; // для скачивания
+
+    function map(value, inMin, inMax, outMin, outMax){
+      return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+    }
+
+    function rgbToHsv(r,g,b){
+      r/=255;g/=255;b/=255;
+      const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+      const d=mx-mn;
+      let h=0;
+      if(d!==0){
+        if(mx===r) h=60*((g-b)/d % 6);
+        else if(mx===g) h=60*((b-r)/d + 2);
+        else h=60*((r-g)/d + 4);
+      }
+      if(h<0) h+=360;
+      return {h:safe(h), s: mx===0?0:d/mx, v:mx};
+      function safe(x){return isFinite(x)?x:0}
+    }
+
+    imageLoader.addEventListener('change', async (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = ()=>{
+        const size = parseInt(canvasSize.value,10);
+        // fit width = size, height scale by aspect
+        const aspect = img.height / img.width;
+        canvas.width = size;
+        canvas.height = Math.max(16, Math.round(size * aspect));
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        // draw fitted
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    });
+
+    canvasSize.addEventListener('change', ()=>{
+      // if there's an image loaded in canvas, redraw with new size by rescaling original pix data
+      // We don't have the original file stored separately; so do nothing unless user reloads image.
+      // (This keeps implementation simple.)
+    });
+
+    colDuration.addEventListener('input', ()=>{colDurVal.textContent = colDuration.value});
+
+    function stopAll(){
+      if(!audioCtx) return;
+      scheduledOscillators.forEach(o=>{
+        try{o.osc.stop(0);}catch(e){}
+        try{o.gain.disconnect();}catch(e){}
+      });
+      scheduledOscillators = [];
+      // close context to free resources
+      try{audioCtx.close();}catch(e){}
+      audioCtx = null;
+      lastBuffer = null;
+    }
+
+    stopBtn.addEventListener('click', ()=>{
+      stopAll();
+    });
+
+    playBtn.addEventListener('click', async ()=>{
+      // read pixels
+      const w = canvas.width; const h = canvas.height;
+      if(w===0||h===0) {alert('Сначала загрузите изображение.'); return}
+      const imgData = ctx.getImageData(0,0,w,h).data;
+
+      // prepare audio
+      if(audioCtx) stopAll();
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = parseFloat(masterGainEl.value);
+      masterGain.connect(audioCtx.destination);
+
+      const modeVal = mode.value;
+      const baseFreq = parseFloat(baseFreqEl.value) || 220;
+      const stepMs = parseFloat(colDuration.value);
+      const samplesPerCol = Math.max(1, parseInt(vBin.value,10));
+      const wave = waveform.value;
+
+      const totalCols = w;
+      const now = audioCtx.currentTime + 0.05;
+      scheduledOscillators = [];
+
+      // We'll create a short oscillator per column (or per color per column in rgb mode)
+      // and schedule them sequentially. Each oscillator has a short envelope.
+      const envelope = {attack:0.005, decay:0.02, sustain:0.6, release:0.03};
+
+      // For WAV download we will render the audio into an OfflineAudioContext
+      // Build an AudioBuffer by offline rendering
+      const totalDurationSec = (totalCols * stepMs) / 1000 + 0.1;
+      const offCtx = new OfflineAudioContext(1, Math.ceil(totalDurationSec * 44100), 44100);
+      const offMaster = offCtx.createGain(); offMaster.gain.value = parseFloat(masterGainEl.value); offMaster.connect(offCtx.destination);
+
+      for(let x=0;x<totalCols;x++){
+        // aggregate pixels of column x vertically into bins of size samplesPerCol and average
+        let sumR=0,sumG=0,sumB=0,sumV=0; let count=0;
+        for(let y=0;y<h;y+=samplesPerCol){
+          const idx = (y*w + x)*4;
+          const r = imgData[idx], g = imgData[idx+1], b = imgData[idx+2];
+          sumR += r; sumG += g; sumB += b; count++;
+        }
+        const avgR = sumR/count, avgG = sumG/count, avgB = sumB/count;
+        const brightness = (0.299*avgR + 0.587*avgG + 0.114*avgB); // 0..255
+        const hsv = rgbToHsv(avgR,avgG,avgB);
+
+        const tStart = now + (x * (stepMs/1000));
+        const dur = (stepMs/1000) * 0.95; // slightly shorter
+
+        if(modeVal === 'brightness'){
+          // map brightness to frequency (log scale for musical feel)
+          const freq = Math.pow(2, map(brightness,0,255, Math.log2(baseFreq), Math.log2(baseFreq*8)));
+          scheduleOscillator(audioCtx, offCtx, offMaster, tStart, dur, freq, wave, envelope);
+        } else if(modeVal === 'hue'){
+          const hue = hsv.h; // 0..360
+          // map hue to one octave range above base
+          const freq = baseFreq * Math.pow(2, map(hue, 0,360, 0, 2));
+          scheduleOscillator(audioCtx, offCtx, offMaster, tStart, dur, freq, wave, envelope);
+        } else if(modeVal === 'rgb'){
+          // create three short oscillators per column for R, G, B (panned via small detune)
+          const freqR = baseFreq * (map(avgR,0,255,0.25,4));
+          const freqG = baseFreq * (map(avgG,0,255,0.25,4));
+          const freqB = baseFreq * (map(avgB,0,255,0.25,4));
+          scheduleOscillator(audioCtx, offCtx, offMaster, tStart, dur, freqR, wave, envelope);
+          scheduleOscillator(audioCtx, offCtx, offMaster, tStart, dur, freqG, wave, envelope);
+          scheduleOscillator(audioCtx, offCtx, offMaster, tStart, dur, freqB, wave, envelope);
+        }
+      }
+
+      // Start actual playback by recreating the schedule in the real audioCtx (for low-latency interactive playback)
+      // We'll schedule similar oscillators but without offline rendering for immediate listening
+      const liveNow = audioCtx.currentTime + 0.05;
+      for(let x=0;x<totalCols;x++){
+        let sumR=0,sumG=0,sumB=0,count=0;
+        for(let y=0;y<h;y+=samplesPerCol){const idx=(y*w+x)*4;sumR+=imgData[idx];sumG+=imgData[idx+1];sumB+=imgData[idx+2];count++}
+        const avgR=sumR/count, avgG=sumG/count, avgB=sumB/count;
+        const brightness = (0.299*avgR + 0.587*avgG + 0.114*avgB);
+        const hsv = rgbToHsv(avgR,avgG,avgB);
+        const tStart = liveNow + (x * (stepMs/1000));
+        const dur = (stepMs/1000) * 0.95;
+
+        if(modeVal === 'brightness'){
+          const freq = Math.pow(2, map(brightness,0,255, Math.log2(baseFreq), Math.log2(baseFreq*8)));
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = wave; osc.frequency.value = freq;
+          g.gain.value = 0;
+          osc.connect(g);
+          g.connect(masterGain);
+          // envelope
+          g.gain.setValueAtTime(0, tStart);
+          g.gain.linearRampToValueAtTime(1*envelope.sustain, tStart + envelope.attack);
+          g.gain.linearRampToValueAtTime(envelope.sustain, tStart + envelope.attack + envelope.decay);
+          g.gain.setValueAtTime(envelope.sustain, tStart + dur - envelope.release);
+          g.gain.linearRampToValueAtTime(0, tStart + dur);
+          osc.start(tStart);
+          osc.stop(tStart + dur + 0.02);
+          scheduledOscillators.push({osc, g});
+        } else if(modeVal === 'hue'){
+          const hue = hsv.h;
+          const freq = baseFreq * Math.pow(2, map(hue, 0,360, 0, 2));
+          const osc = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          osc.type = wave; osc.frequency.value = freq;
+          g.gain.value = 0; osc.connect(g); g.connect(masterGain);
+          g.gain.setValueAtTime(0, tStart);
+          g.gain.linearRampToValueAtTime(envelope.sustain, tStart + envelope.attack);
+          g.gain.setValueAtTime(envelope.sustain, tStart + dur - envelope.release);
+          g.gain.linearRampToValueAtTime(0, tStart + dur);
+          osc.start(tStart); osc.stop(tStart + dur + 0.02);
+          scheduledOscillators.push({osc,g});
+        } else if(modeVal === 'rgb'){
+          const freqR = baseFreq * (map(avgR,0,255,0.25,4));
+          const freqG = baseFreq * (map(avgG,0,255,0.25,4));
+          const freqB = baseFreq * (map(avgB,0,255,0.25,4));
+          [freqR,freqG,freqB].forEach((freq)=>{
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = wave; osc.frequency.value = freq;
+            g.gain.value = 0; osc.connect(g); g.connect(masterGain);
+            g.gain.setValueAtTime(0, tStart);
+            g.gain.linearRampToValueAtTime(envelope.sustain, tStart + envelope.attack);
+            g.gain.setValueAtTime(envelope.sustain, tStart + dur - envelope.release);
+            g.gain.linearRampToValueAtTime(0, tStart + dur);
+            osc.start(tStart); osc.stop(tStart + dur + 0.02);
+            scheduledOscillators.push({osc,g});
+          });
+        }
+      }
+
+      // Offline render to WAV data and keep buffer for download
+      try{
+        const rendered = await offCtx.startRendering();
+        lastBuffer = rendered;
+      }catch(err){
+        console.warn('Offline render failed', err);
+      }
+
+    });
+
+    function scheduleOscillator(realCtx, offCtx, offMaster, tStart, dur, freq, wave, env){
+      // schedule on offline context
+      try{
+        const osc = offCtx.createOscillator();
+        const g = offCtx.createGain();
+        osc.type = wave; osc.frequency.value = freq;
+        osc.connect(g); g.connect(offMaster);
+        const start = Math.max(0, tStart - offCtx.currentTime);
+        g.gain.setValueAtTime(0, start);
+        g.gain.linearRampToValueAtTime(env.sustain, start + env.attack);
+        g.gain.setValueAtTime(env.sustain, start + dur - env.release);
+        g.gain.linearRampToValueAtTime(0, start + dur);
+        osc.start(start);
+        osc.stop(start + dur + 0.02);
+      }catch(e){
+        // ignore
+      }
+    }
+
+    downloadWav.addEventListener('click', ()=>{
+      if(!lastBuffer){alert('Нет сгенерированного звука. Сначала нажмите Play.'); return}
+      const wav = audioBufferToWav(lastBuffer);
+      const blob = new Blob([wav],{type:'audio/wav'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'image-sound.wav'; document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // utils: convert AudioBuffer to WAV (16-bit PCM)
+    function audioBufferToWav(buffer){
+      const numChannels = buffer.numberOfChannels;
+      const sampleRate = buffer.sampleRate;
+      const format = 1; // PCM
+      const bitDepth = 16;
+      const samples = buffer.length * numChannels;
+      const blockAlign = numChannels * bitDepth/8;
+      const byteRate = sampleRate * blockAlign;
+      const bufferLen = 44 + samples * (bitDepth/8);
+      const arrayBuffer = new ArrayBuffer(bufferLen);
+      const view = new DataView(arrayBuffer);
+
+      /* RIFF identifier */ writeString(view,0,'RIFF');
+      /* file length */ view.setUint32(4, 36 + samples * (bitDepth/8), true);
+      /* RIFF type */ writeString(view,8,'WAVE');
+      /* format chunk identifier */ writeString(view,12,'fmt ');
+      /* format chunk length */ view.setUint32(16,16,true);
+      /* sample format (raw) */ view.setUint16(20,format,true);
+      /* channel count */ view.setUint16(22,numChannels,true);
+      /* sample rate */ view.setUint32(24,sampleRate,true);
+      /* byte rate */ view.setUint32(28,byteRate,true);
+      /* block align */ view.setUint16(32,blockAlign,true);
+      /* bits per sample */ view.setUint16(34,bitDepth,true);
+      /* data chunk identifier */ writeString(view,36,'data');
+      /* data chunk length */ view.setUint32(40,samples * (bitDepth/8),true);
+
+      // write interleaved data
+      let offset = 44;
+      const channelData = [];
+      for(let c=0;c<numChannels;c++) channelData.push(buffer.getChannelData(c));
+      for(let i=0;i<buffer.length;i++){
+        for(let ch=0;ch<numChannels;ch++){
+          let sample = Math.max(-1, Math.min(1, channelData[ch][i]));
+          view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+          offset += 2;
+        }
+      }
+      return view;
+
+      function writeString(dataview, offset, str){
+        for(let i=0;i<str.length;i++) dataview.setUint8(offset + i, str.charCodeAt(i));
+      }
+    }
+
+  })();
+  </script>
+</body>
+</html>

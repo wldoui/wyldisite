@@ -7,7 +7,7 @@ var all_sites = [
 	  "tags": [
 		"minecraft", "survivaltools", "mods", "stools"
 	  ]
-	}
+	},
 	{
 	  "href": "converter",
 	  "name": "WebP Convertor",

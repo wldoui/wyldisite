@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOID SYSTEM v2.0 - БЕЗНАДЁГА</title>
+    <style>
+        @font-face {
+            font-family: 'DOS';
+            src: url('https://fonts.cdnfonts.com/s/13936/Perfect_DOS_VGA_437_Win.woff') format('woff');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000011;
+            color: #00ffff;
+            font-family: 'DOS', monospace;
+            height: 100vh;
+            overflow: hidden;
+            cursor: default;
+            position: relative;
+            line-height: 1.2;
+        }
+
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.1;
+        }
+
+        #snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .desktop {
+            height: calc(100vh - 60px);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .desktop-icon {
+            position: absolute;
+            width: 80px;
+            text-align: center;
+            cursor: pointer;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            transition: all 0.3s;
+            padding: 10px;
+        }
+
+        .desktop-icon:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .icon-emoji {
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+
+        .window {
+            position: absolute;
+            background: #000022;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 30px #00ffff;
+            min-width: 600px;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            resize: both;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        .title-bar {
+            background: linear-gradient(90deg, #000033, #001144);
+            color: #00ffff;
+            padding: 8px 12px;
+            border-bottom: 1px solid #00ffff;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            user-select: none;
+        }
+
+        .title-bar-text {
+            font-weight: bold;
+            text-shadow: 0 0 15px #00ffff;
+        }
+
+        .title-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .title-controls button {
+            background: #002244;
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            width: 25px;
+            height: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+        }
+
+        .title-controls button:hover {
+            background: #003366;
+        }
+
+        .content {
+            flex: 1;
+            padding: 15px;
+            background: #000011;
+            color: #00ffff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-output {
+            flex: 1;
+            overflow-y: auto;
+            background: #000011;
+            border: 1px solid #003344;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-family: 'DOS', monospace;
+            white-space: pre-wrap;
+            line-height: 1.3;
+        }
+
+        .terminal-output::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal-output::-webkit-scrollbar-track {
+            background: #001122;
+        }
+
+        .terminal-output::-webkit-scrollbar-thumb {
+            background: #00ffff;
+            border-radius: 4px;
+        }
+
+        .terminal-input {
+            background: #001122;
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .terminal-input:focus {
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        .location-art {
+            font-family: monospace;
+            white-space: pre;
+            text-align: center;
+            margin: 15px 0;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            line-height: 1;
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #000033;
+            border-top: 3px solid #00ffff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+            gap: 20px;
+        }
+
+        #start-btn {
+            background: #002244;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        #start-btn:hover {
+            background: #003366;
+        }
+
+        .start-menu {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            background: #000033;
+            border: 2px solid #00ffff;
+            border-bottom: none;
+            display: none;
+            flex-direction: column;
+            width: 280px;
+            z-index: 1001;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            color: #00ffff;
+            text-decoration: none;
+            border-bottom: 1px solid #003355;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: #002244;
+        }
+
+        #clock {
+            margin-left: auto;
+            color: #00ffff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .glitch {
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff; }
+            25% { text-shadow: -2px -2px #ff00ff, 2px 2px #00ffff; }
+            50% { text-shadow: 2px -2px #ff00ff, -2px 2px #00ffff; }
+            75% { text-shadow: -2px 2px #ff00ff, 2px -2px #00ffff; }
+            100% { text-shadow: 2px 2px #ff00ff, -2px -2px #00ffff; }
+        }
+
+        .flicker {
+            animation: flicker 4s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+            51% { opacity: 0.3; }
+            52% { opacity: 0.9; }
+        }
+
+        .snowflake {
+            position: absolute;
+            color: #aaccff;
+            font-size: 18px;
+            user-select: none;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .inventory-item {
+            background: #002244;
+            border: 1px solid #00ffff;
+            padding: 8px 12px;
+            margin: 5px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .inventory-item:hover {
+            background: #003366;
+        }
+
+        .map-location {
+            padding: 8px 12px;
+            margin: 3px 0;
+            background: #001133;
+            border-left: 3px solid #00ffff;
+            cursor: pointer;
+        }
+
+        .map-location.current {
+            background: #002255;
+            border-left: 3px solid #ff00ff;
+        }
+
+        .map-location:hover {
+            background: #003366;
+        }
+
+        .dialog-box {
+            background: #001133;
+            border: 2px solid #00ffff;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        .thought {
+            color: #aaccff;
+            font-style: italic;
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        .anger {
+            color: #ff4444;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .despair {
+            color: #8888ff;
+            text-shadow: 0 0 10px #0000ff;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<div id="snow"></div>
+
+<div class="desktop">
+    <div class="desktop-icon" style="top: 40px; left: 40px;" onclick="createWindow('ТЕРМИНАЛ БЕЗНАДЁГИ', 'terminal')">
+        <div class="icon-emoji">💀</div>
+        <div>Терминал</div>
+    </div>
+    
+    <div class="desktop-icon" style="top: 40px; left: 140px;" onclick="createWindow('КАРТА ПУСТОТЫ', 'map')">
+        <div class="icon-emoji">🗺️</div>
+        <div>Карта Пустоты</div>
+    </div>
+    
+    <div class="desktop-icon" style="top: 40px; left: 240px;" onclick="createWindow('МОЙ ХЛАМ', 'inventory')">
+        <div class="icon-emoji">🎒</div>
+        <div>Мой Хлам</div>
+    </div>
+    
+    <div class="desktop-icon" style="top: 40px; left: 340px;" onclick="createWindow('ИСПОВЕДЬ', 'diary')">
+        <div class="icon-emoji">📖</div>
+        <div>Исповедь</div>
+    </div>
+    
+    <div class="desktop-icon" style="top: 40px; left: 440px;" onclick="createWindow('СИСТЕМА', 'system')">
+        <div class="icon-emoji">🔧</div>
+        <div>Система</div>
+    </div>
+    
+    <div class="desktop-icon" style="top: 40px; left: 540px;" onclick="createWindow('БОЛЬ', 'pain')">
+        <div class="icon-emoji">💔</div>
+        <div>Боль</div>
+    </div>
+</div>
+
+<div class="taskbar">
+    <button id="start-btn">⚫ VOID SYSTEM</button>
+    <div class="start-menu">
+        <div class="menu-item" onclick="createWindow('ТЕРМИНАЛ БЕЗНАДЁГИ', 'terminal')">💀 Терминал Безнадёги</div>
+        <div class="menu-item" onclick="createWindow('КАРТА ПУСТОТЫ', 'map')">🗺️ Карта Пустоты</div>
+        <div class="menu-item" onclick="createWindow('МОЙ ХЛАМ', 'inventory')">🎒 Мой Хлам</div>
+        <div class="menu-item" onclick="createWindow('ИСПОВЕДЬ', 'diary')">📖 Исповедь</div>
+        <div class="menu-item" onclick="createWindow('СИСТЕМА', 'system')">🔧 Системный Ад</div>
+        <div class="menu-item" onclick="createWindow('БОЛЬ', 'pain')">💔 Галерея Боли</div>
+        <div class="menu-item" onclick="createWindow('НЕНАВИСТЬ', 'hate')">🔪 Ненависть к Себе</div>
+        <div class="menu-item" onclick="createWindow('СМЕРТЬ', 'death')">☠️ Мысли о Смерти</div>
+    </div>
+    <div id="clock">00:00:00</div>
+</div>
+
+<script>
+    // ======================== МАССИВ ЛОКАЦИЙ И ДИАЛОГОВ ========================
+    const locations = [
+        {
+            name: "бесконечный-холод",
+            ascii: `
+    ❄️ ❄️ ❄️ ❄️ ❄️
+   ❄️           ❄️
+  ❄️     🚶     ❄️
+ ❄️             ❄️
+❄️ ❄️ ❄️ ❄️ ❄️ ❄️ ❄️
+            `,
+            description: "Бескрайняя ледяная пустота. Снег хрустит под ногами, но звук теряется в вечном ветре. Холод проникает в кости, но ты уже не чувствуешь ничего. Ты стал частью этого льда.",
+            thoughts: [
+                "Блядь, опять этот ёбаный холод... Как будто чего-то нового ожидал.",
+                "Интересно, если я просто лягу и не встану, превращусь ли в очередную ледяную статую?",
+                "Может, это и есть ад? Просто бесконечный холод и одиночество? Ну, по крайней мере, здесь меня никто не достаёт.",
+                "Хотел бы я чувствовать что-то кроме этой пустоты. Даже боль была бы лучше."
+            ],
+            items: ["замёрзшая-слеза", "осколок-льда"],
+            itemsDescription: [
+                "Крошечная ледышка. Внутри будто застыло воспоминание о чём-то тёплом. Нахуй оно надо?",
+                "Острые края режут пальцы, но ты уже не чувствуешь боли. Идеально для этого говняного мира."
+            ],
+            exits: ["бесконечный-холод", "заброшенный-город", "мёртвый-лес", "берег-забвения"]
+        },
+        {
+            name: "заброшенный-город",
+            ascii: `
+    🏢💀🏢
+   /     \\
+  🏢  🚗  🏢
+ /         \\
+🏢   🚶   🏢
+ \\         /
+  🏢     🏢
+   \\_____/
+            `,
+            description: "Город-призрак. Небоскрёбы как надгробия возвышаются над мёртвыми улицами. Рекламные щиты обещают счастье, которого никогда не существовало. Твои шаги - единственный звук в этом царстве тишины.",
+            thoughts: [
+                "Гляньте на этот пиздец. Весь город вымер, а я всё ещё тут торчу. Ирония, блять.",
+                "Иногда кажется, что из-за угла выглянет кто-то живой. Но нет, всегда оказывается, что это просто моё ёбаное воображение.",
+                "Может, все они сдохли, а я один застрял в этом аду? Заслужил, наверное.",
+                "Эти пустые здания как моя голова - много места, но внутри них нихуя нет."
+            ],
+            items: ["разбитый-телефон", "выцветшая-фотка"],
+            itemsDescription: [
+                "Последнее сообщение: 'Я тебя люблю'. Ответа нет. Как и всегда, блять.",
+                "Лица размыты. Я даже не помню, кто эти люди. Наверное, не очень-то и важно."
+            ],
+            exits: ["бесконечный-холод", "заброшенный-город", "станция-метро", "больница", "школа-призраков"]
+        },
+        {
+            name: "мёртвый-лес",
+            ascii: `
+    🌲    🌲    🌲
+      \\   |   /
+       \\  |  /
+    🌲  \\ | /  🌲
+        \\|/
+    ----💀----
+        /|\\
+    🌲  / | \\  🌲
+       /  |  \\
+      /   |   \\
+    🌲    🌲    🌲
+            `,
+            description: "Деревья стоят как скелеты, протягивая костяные ветви к серому небу. Воздух пахнет смертью и распадом. Шёпот между деревьями - это не ветер, а эхо твоих самых тёмных мыслей.",
+            thoughts: [
+                "Каждое дерево здесь похоже на один из моих провалов. Красиво, блять.",
+                "Иногда слышу шёпот. Наверное, это моё ёбаное сознание finally сходит с ума.",
+                "Хорошее место, чтобы сдохнуть. Тихий, спокойный, никто не найдёт.",
+                "Эти деревья видели столько же дерьма, сколько и я. Может, у нас много общего."
+            ],
+            items: ["гнилой-плод", "кость-птицы"],
+            itemsDescription: [
+                "Когда-то это могло быть чем-то красивым. Теперь просто гниющее дерьмо. Знакомое чувство.",
+                "Хрупкая и бесполезная. Как и всё в этом мире. И во мне тоже."
+            ],
+            exits: ["бесконечный-холод", "мёртвый-лес", "болото-тоски", "пещера-забвения", "кладбище-надежд"]
+        },
+        {
+            name: "станция-метро",
+            ascii: `
+    _____________
+   |  🚇  🚇  🚇 |
+   |_____________|
+   |             |
+   |     ⏳      |
+   |             |
+   |_____🚶______|
+            `,
+            description: "Поезда застыли на вечных путях. Электронные табло показывают время, которое остановилось. В тоннелях - тьма, которая одновременно пугает и манит. Запах озона смешивается с запахом отчаяния.",
+            thoughts: [
+                "Поезда, которые никогда не придут. Как и помощь, которую я так долго ждал.",
+                "Иногда сажусь на скамейку и представляю, что вот-вот приедет поезд и увезёт меня отсюда. Детский бред, конечно.",
+                "Все эти расписания - просто насмешка. 'Следующий поезд: никогда' - более честно.",
+                "Тоннели тёмные... Может, в одном из них я найду наконец покой?"
+            ],
+            items: ["проездной-билет", "расписание-призраков"],
+            itemsDescription: [
+                "Билет в никуда. Дата: 'когда-нибудь'. Это когда-нибудь никогда не наступит, как и моё счастье.",
+                "Поезда, которые существуют только в моих фантазиях. Как и нормальная жизнь."
+            ],
+            exits: ["заброшенный-город", "станция-метро", "подземелье", "вокзал-забвения"]
+        },
+        {
+            name: "больница",
+            ascii: `
+    🏥=======
+   |        |
+   |  💊    |
+   |  🛏️    |
+   |  🚶    |
+   |________|
+            `,
+            description: "Коридоры больницы протянулись в бесконечность. Пациентские карты исписаны диагнозами, которые звучат как приговоры. Запах дезинфекции не может перебить запах смерти.",
+            thoughts: [
+                "Вот и вернулся в родные пенаты. Только теперь тут никого нет. Идеально.",
+                "Все эти пустые палаты... Кажется, в каждой из них умирала какая-то часть меня.",
+                "Может, если я лягу на одну из этих кроватей, я наконец усну и не проснусь?",
+                "Интересно, есть ли здесь отделение для лечения от жизни? Наверное, переполнено."
+            ],
+            items: ["пустой-шприц", "история-болезни"],
+            itemsDescription: [
+                "Когда-то в нём было что-то, что могло помочь. Теперь просто пустота. Знакомо.",
+                "Диагноз: 'экзистенциальный кризис'. Лечение: отсутствует. Прогноз: безнадёжен."
+            ],
+            exits: ["заброшенный-город", "больница", "морг", "психиатрическое-отделение", "лаборатория"]
+        },
+        {
+            name: "кладбище-надежд",
+            ascii: `
+    † † † † †
+     \\ | /
+    -- 💀 --
+     / | \\
+    † † † † †
+            `,
+            description: "Бесконечное поле могил. На каждом надгробии - имя твоей мечты, твоей надежды, твоего будущего. Все они мертвы. Ветер плачет над их могилами, но ты уже не можешь.",
+            thoughts: [
+                "Смотри-ка, целое кладбище всего, во что я когда-то верил. Красиво, блять.",
+                "Вот здесь похоронена моя карьера... А вот - отношения... А вон там - самоуважение.",
+                "Может, и мне стоит заказать себе местечко? Всё равно скоро пригодится.",
+                "Интересно, есть ли здесь могила для моего будущего? Наверное, она пустая - его никогда и не было."
+            ],
+            items: ["увядший-цветок", "надгробная-плита"],
+            itemsDescription: [
+                "Когда-то он был красивым. Теперь просто пыль. Как и всё, к чему я прикасаюсь.",
+                "Здесь могла бы быть ваша реклама. Или моё имя. Какая разница, в конце концов?"
+            ],
+            exits: ["мёртвый-лес", "кладбище-надежд", "часовня-отчаяния"]
+        },
+        {
+            name: "подземелье",
+            ascii: `
+    🕳️=======
+   |        |
+   |  🔑    |
+   |  🚶    |
+   |  💀    |
+   |________|
+            `,
+            description: "Сырые каменные стены, покрытые плесенью. Цепи на стенах когда-то держали кого-то. Возможно, они держали тебя. Воздух тяжёлый, пахнет страхом и предательством.",
+            thoughts: [
+                "Ну конечно, куда же без подземелья. Наверное, здесь хранятся все мои ёбаные секреты.",
+                "Эти цепи... Иногда кажется, что они до сих пор держат меня. Просто невидимые.",
+                "Интересно, сколько людей сгнило в таких местах? Добро пожаловать в клуб, сука.",
+                "Тёмно, сыро, пахнет смертью... Почти как в моей душе."
+            ],
+            items: ["ржавые-цепи", "дневник-узника"],
+            itemsDescription: [
+                "Холодные и тяжёлые. Как и воспоминания, которые я таскаю с собой.",
+                "Последняя запись: 'Почему я?' Хороший вопрос, дружок. Очень хороший вопрос."
+            ],
+            exits: ["станция-метро", "подземелье", "камера-пыток", "сокровищница-пустоты"]
+        },
+        {
+            name: "берег-забвения",
+            ascii: `
+    ~~~~~~~~~~~
+   ~     🚶    ~
+  ~      🌊     ~
+ ~               ~
+~       🏝️       ~
+ ~               ~
+  ~             ~
+   ~           ~
+    ~~~~~~~~~~~
+            `,
+            description: "Чёрное море бьётся о берег из пепла. Волны приносят обломки кораблей, которые никогда не доплывут до цели. Небо сливается с водой в единую серую массу.",
+            thoughts: [
+                "Море из пепла... Похоже на мою жизнь - всё превратилось в пыль.",
+                "Иногда смотрю на горизонт и думаю: а что там? Наверное, ещё больше этого дерьма.",
+                "Волны такие же бесполезные, как и я. Бесконечно бьются о берег, ничего не меняя.",
+                "Хорошее место, чтобы утонуть. Если бы я мог умереть."
+            ],
+            items: ["ракушка-пустоты", "обломок-корабля"],
+            itemsDescription: [
+                "Если приложить к уху, слышится не шум моря, а тишина. Знакомый звук.",
+                "Когда-то это было частью чего-то большего. Теперь просто хлам. Привет, собрат."
+            ],
+            exits: ["бесконечный-холод", "берег-забвения", "маяк-безумия", "порт-призраков"]
+        },
+        {
+            name: "психиатрическое-отделение",
+            ascii: `
+    🏥=======
+   |  🧠     |
+   |  💊     |
+   |  🚶     |
+   |  📊     |
+   |________|
+            `,
+            description: "Бесконечные коридоры с мягкими стенами. Двери в палаты заперты, но из-за них доносятся крики - твои собственные. На стенах - рисунки сумасшедших, которые слишком похожи на твои мысли.",
+            thoughts: [
+                "Ахаха, вот и добрался до дна! Психиатричка, блять! Заслужил, наверное.",
+                "Все эти крики за дверями... Интересно, они тоже ненавидят себя так же сильно?",
+                "Может, здесь мне наконец поставят правильный диагноз: 'неисправимый уёбок'.",
+                "Эти мягкие стены не могут защитить от мыслей в голове. Ничто не может."
+            ],
+            items: ["смирительная-рубашка", "карта-пациента"],
+            itemsDescription: [
+                "Удобно. Всю жизнь чувствовал себя в такой, теперь есть и настоящая.",
+                "Диагноз: 'хроническое существование'. Лечение: смерть. Но и она не помогает."
+            ],
+            exits: ["больница", "психиатрическое-отделение", "кабинет-терапевта", "изолятор"]
+        },
+        {
+            name: "часовня-отчаяния",
+            ascii: `
+      /\\
+     /  \\
+    /    \\
+   /  🙏  \\
+  /        \\
+ /__________\\
+    |    |
+    |    |
+            `,
+            description: "Разрушенная часовня. Витражи разбиты, скамьи сгнили. На алтаре лежит пустая библия - все молитвы уже произнесены, и никто не услышан. Боги умерли, и ты видел, как это случилось.",
+            thoughts: [
+                "Даже боги отсюда свалили. Умные ребята, чё.",
+                "Сколько здесь молились о спасении? И сколько получили ответ? Ноль, блять.",
+                "Может, помолюсь? 'Избавь меня от этой хуйни'... Тишина в ответ. Как и ожидалось.",
+                "Интересно, есть ли бог, который specializes в таких отбросах, как я?"
+            ],
+            items: ["разбитый-витраж", "пустая-дароносица"],
+            itemsDescription: [
+                "Когда-то через него лился свет. Теперь только тьма. Поэтично, блять.",
+                "Пустота внутри отражает пустоту вокруг. И внутри меня."
+            ],
+            exits: ["кладбище-надежд", "часовня-отчаяния", "склеп", "монастырь-тишины"]
+        }
+    ];
+
+    // ======================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ========================
+    let currentLocation = "бесконечный-холод";
+    let inventory = [];
+    let diary = [];
+    let systemLogs = [];
+    let thoughtCounter = 0;
+    let windowZIndex = 100;
+    let commandHistory = [];
+    let historyIndex = -1;
+
+    // ======================== СИСТЕМНЫЕ ФУНКЦИИ ========================
+    function getLocation(name) {
+        return locations.find(loc => loc.name === name);
+    }
+
+    function getCurrentLocation() {
+        return getLocation(currentLocation);
+    }
+
+    function moveTo(locationName) {
+        const current = getCurrentLocation();
+        if (current.exits.includes(locationName)) {
+            currentLocation = locationName;
+            addDiaryEntry(`Перешёл в локацию: ${locationName}`);
+            addSystemLog(`MOVED: ${current.name} -> ${locationName}`);
+            return true;
+        }
+        return false;
+    }
+
+    function takeItem(itemName) {
+        const location = getCurrentLocation();
+        const itemIndex = location.items.indexOf(itemName);
+        
+        if (itemIndex !== -1 && !inventory.includes(itemName)) {
+            inventory.push(itemName);
+            addDiaryEntry(`Подобрал: ${itemName}`);
+            addSystemLog(`ITEM_TAKEN: ${itemName}`);
+            return true;
+        }
+        return false;
+    }
+
+    function getRandomThought() {
+        const location = getCurrentLocation();
+        const thought = location.thoughts[thoughtCounter % location.thoughts.length];
+        thoughtCounter++;
+        return thought;
+    }
+
+    function addDiaryEntry(entry) {
+        const time = new Date().toLocaleTimeString();
+        diary.unshift(`[${time}] ${entry}`);
+        if (diary.length > 100) diary.pop();
+    }
+
+    function addSystemLog(log) {
+        const time = new Date().toLocaleTimeString();
+        systemLogs.unshift(`[${time}] ${log}`);
+        if (systemLogs.length > 200) systemLogs.pop();
+    }
+
+    // ======================== ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ========================
+    function initMatrix() {
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = "01010101010101010101010101010101";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+        
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 1, 17, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#0ff';
+            ctx.font = `${fontSize}px monospace`;
+            
+            for (let i = 0; i < drops.length; i++) {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(draw, 33);
+    }
+
+    function createSnow() {
+        const container = document.getElementById('snow');
+        
+        function createFlake() {
+            const flake = document.createElement('div');
+            flake.className = 'snowflake';
+            flake.textContent = '❄';
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.animationDuration = (Math.random() * 10 + 5) + 's';
+            flake.style.opacity = Math.random() * 0.5 + 0.3;
+            container.appendChild(flake);
+            
+            setTimeout(() => {
+                flake.remove();
+                createFlake();
+            }, 15000);
+        }
+        
+        for (let i = 0; i < 80; i++) {
+            setTimeout(createFlake, i * 200);
+        }
+    }
+
+    // ======================== СИСТЕМА ОКОН ========================
+    function createWindow(title, type) {
+        const window = document.createElement('div');
+        window.className = 'window flicker';
+        window.style.left = `${50 + (Math.random() * 100)}px`;
+        window.style.top = `${50 + (Math.random() * 100)}px`;
+        window.style.zIndex = ++windowZIndex;
+        
+        window.innerHTML = `
+            <div class="title-bar">
+                <div class="title-bar-text">⚫ ${title}</div>
+                <div class="title-controls">
+                    <button onclick="this.closest('.window').style.display='none'">_</button>
+                    <button onclick="toggleMaximize(this.closest('.window'))">□</button>
+                    <button onclick="this.closest('.window').remove()">X</button>
+                </div>
+            </div>
+            <div class="content"></div>
+        `;
+        
+        const content = window.querySelector('.content');
+        initWindowContent(type, content);
+        
+        document.querySelector('.desktop').appendChild(window);
+        makeDraggable(window);
+        
+        return window;
+    }
+
+    function toggleMaximize(window) {
+        window.classList.toggle('maximized');
+        if (window.classList.contains('maximized')) {
+            window.style.width = '95vw';
+            window.style.height = '85vh';
+            window.style.left = '2.5vw';
+            window.style.top = '2.5vh';
+        }
+    }
+
+    function makeDraggable(element) {
+        const titleBar = element.querySelector('.title-bar');
+        let isDragging = false;
+        let offsetX, offsetY;
+        
+        titleBar.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDrag);
+        
+        function startDrag(e) {
+            isDragging = true;
+            offsetX = e.clientX - element.offsetLeft;
+            offsetY = e.clientY - element.offsetTop;
+            element.style.zIndex = ++windowZIndex;
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            element.style.left = (e.clientX - offsetX) + 'px';
+            element.style.top = (e.clientY - offsetY) + 'px';
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+        }
+    }
+
+    // ======================== КОНТЕНТ ОКОН ========================
+    function initWindowContent(type, container) {
+        switch(type) {
+            case 'terminal':
+                initTerminal(container);
+                break;
+            case 'map':
+                initMap(container);
+                break;
+            case 'inventory':
+                initInventory(container);
+                break;
+            case 'diary':
+                initDiary(container);
+                break;
+            case 'system':
+                initSystem(container);
+                break;
+            case 'pain':
+                initPain(container);
+                break;
+            case 'hate':
+                initHate(container);
+                break;
+            case 'death':
+                initDeath(container);
+                break;
+        }
+    }
+
+    function initTerminal(container) {
+        const location = getCurrentLocation();
+        
+        container.innerHTML = `
+            <div class="terminal-output" id="terminalOutput">
+VOID SYSTEM v2.0 - ТЕРМИНАЛ БЕЗНАДЁГИ
+══════════════════════════════════════
+
+Текущая локация: ${location.name}
+
+${location.ascii}
+
+${location.description}
+
+<div class="thought">💭 "${getRandomThought()}"</div>
+
+Доступные выходы: ${location.exits.join(', ')}
+
+Инвентарь: ${inventory.length} предметов
+
+Команды:
+• осмотреть [локация/предмет]
+• идти [локация]
+• взять [предмет]
+• мысли
+• инвентарь
+• помощь
+• система
+
+>_
+            </div>
+            <input class="terminal-input" id="terminalInput" placeholder="Введите команду..." />
+        `;
+        
+        const input = container.querySelector('#terminalInput');
+        const output = container.querySelector('#terminalOutput');
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const command = input.value.trim();
+                if (command) {
+                    commandHistory.unshift(command);
+                    historyIndex = -1;
+                    processCommand(command, output);
+                    input.value = '';
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    input.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    input.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = -1;
+                    input.value = '';
+                }
+            }
+        });
+        
+        input.focus();
+    }
+
+    function initMap(container) {
+        let content = "🗺️ КАРТА ПУСТОТЫ\n═══════════════\n\n";
+        
+        locations.forEach(loc => {
+            const isCurrent = loc.name === currentLocation;
+            content += `<div class="map-location ${isCurrent ? 'current' : ''}" onclick="moveTo('${loc.name}'); setTimeout(() => updateAllWindows(), 100)">`;
+            content += `${isCurrent ? '📍' : '  '} ${loc.name}`;
+            content += `</div>\n`;
+        });
+        
+        const current = getCurrentLocation();
+        content += `\n${current.ascii}\n`;
+        content += `\n${current.description}`;
+        
+        container.innerHTML = content;
+    }
+
+    function initInventory(container) {
+        let content = "🎒 МОЙ ХЛАМ\n══════════\n\n";
+        
+        if (inventory.length === 0) {
+            content += "Пусто... Как и всё остальное.\n";
+        } else {
+            inventory.forEach(item => {
+                content += `<div class="inventory-item" onclick="alert('${getItemDescription(item)}')">${item}</div>`;
+            });
+        }
+        
+        content += `\n<div class="thought">💭 "Весь этот хлам - как моя жизнь. Бесполезный и ненужный."</div>`;
+        
+        container.innerHTML = content;
+    }
+
+    function initDiary(container) {
+        let content = "📖 ИСПОВЕДЬ\n══════════\n\n";
+        
+        if (diary.length === 0) {
+            content += "Страницы пусты. Как и моя душа.\n";
+        } else {
+            diary.forEach(entry => {
+                content += `${entry}\n\n`;
+            });
+        }
+        
+        container.innerHTML = `<div class="terminal-output">${content}</div>`;
+    }
+
+    function initSystem(container) {
+        let content = "🔧 СИСТЕМНЫЙ АД\n══════════════\n\n";
+        
+        content += `Версия: VOID SYSTEM v2.0\n`;
+        content += `Статус: ${inventory.length > 5 ? 'ФУНКЦИОНИРУЕТ' : 'НА ГРАНИ'}\n`;
+        content += `Локаций: ${locations.length}\n`;
+        content += `Предметов: ${inventory.length}\n`;
+        content += `Записей: ${diary.length}\n\n`;
+        
+        content += "СИСТЕМНЫЕ ЛОГИ:\n";
+        systemLogs.slice(0, 20).forEach(log => {
+            content += `${log}\n`;
+        });
+        
+        container.innerHTML = `<div class="terminal-output">${content}</div>`;
+    }
+
+    function initPain(container) {
+        const pains = [
+            "💔 Боль от того, что тебя никогда не любили по-настоящему",
+            "🔪 Боль от предательства тех, кому ты доверял",
+            "🌪️ Боль от осознания, что лучшие годы прошли зря",
+            "❄️ Боль от одиночества в толпе людей",
+            "🔥 Боль от того, что ты никогда не будешь достаточно хорош",
+            "💀 Боль от воспоминаний, которые не дают спать",
+            "🕳️ Боль от пустоты, которую невозможно заполнить"
+        ];
+        
+        let content = "💔 ГАЛЕРЕЯ БОЛИ\n═══════════════\n\n";
+        
+        pains.forEach(pain => {
+            content += `${pain}\n\n`;
+        });
+        
+        content += `<div class="thought anger">💭 "Иногда кажется, что боль - это единственное, что подтверждает, что я ещё жив."</div>`;
+        
+        container.innerHTML = `<div class="terminal-output">${content}</div>`;
+    }
+
+    function initHate(container) {
+        const hates = [
+            "🔪 Ненавижу себя за каждую ошибку, каждую слабость",
+            "💀 Ненавижу своё отражение в зеркале",
+            "🌑 Ненавижу свои мысли, свои чувства, своё существование",
+            "🔥 Ненавижу за то, что не могу просто взять и исчезнуть",
+            "❄️ Ненавижу за то, что продолжаю дышать, хотя не хочу",
+            "🕳️ Ненавижу за то, что обрекаю других на страдания своим существованием"
+        ];
+        
+        let content = "🔪 НЕНАВИСТЬ К СЕБЕ\n══════════════════\n\n";
+        
+        hates.forEach(hate => {
+            content += `${hate}\n\n`;
+        });
+        
+        content += `<div class="thought anger">💭 "Если бы я мог вырвать из груди всё, что делает меня мной, я бы сделал это не задумываясь."</div>`;
+        
+        container.innerHTML = `<div class="terminal-output">${content}</div>`;
+    }
+
+    function initDeath(container) {
+        const deaths = [
+            "☠️ Иногда думаю, что смерть - это не конец, а начало настоящего покоя",
+            "💀 Мечтаю об небытии, где нет боли, нет мыслей, нет меня",
+            "🕳️ Смерть кажется таким тёплым, тёмным, тихим местом...",
+            "🌫️ Хочу раствориться в небытии, как капля в океане",
+            "⚰️ Иногда представляю, как меня находят через недели... и никому нет дела",
+            "🪦 Хорошая новость: всё когда-нибудь кончается. Плохая: приходится ждать"
+        ];
+        
+        let content = "☠️ МЫСЛИ О СМЕРТИ\n════════════════\n\n";
+        
+        deaths.forEach(death => {
+            content += `${death}\n\n`;
+        });
+        
+        content += `<div class="thought despair">💭 "Смерть не пугает. Пугает то, что придётся продолжать жить."</div>`;
+        
+        container.innerHTML = `<div class="terminal-output">${content}</div>`;
+    }
+
+    function getItemDescription(itemName) {
+        for (let location of locations) {
+            const index = location.items.indexOf(itemName);
+            if (index !== -1) {
+                return location.itemsDescription[index];
+            }
+        }
+        return "Да кому нужен этот хлам вообще...";
+    }
+
+    // ======================== ОБРАБОТКА КОМАНД ========================
+    function processCommand(command, output) {
+        const args = command.toLowerCase().split(' ');
+        const cmd = args[0];
+        
+        output.innerHTML += `> ${command}\n`;
+        
+        switch(cmd) {
+            case 'осмотреть':
+                handleExamine(args[1], output);
+                break;
+            case 'идти':
+                handleMove(args[1], output);
+                break;
+            case 'взять':
+                handleTake(args[1], output);
+                break;
+            case 'мысли':
+                output.innerHTML += `<div class="thought">💭 "${getRandomThought()}"</div>\n`;
+                break;
+            case 'инвентарь':
+                output.innerHTML += `Предметы: ${inventory.length > 0 ? inventory.join(', ') : 'пусто'}\n`;
+                break;
+            case 'помощь':
+                showHelp(output);
+                break;
+            case 'система':
+                showSystem(output);
+                break;
+            default:
+                output.innerHTML += `Неизвестная команда: ${command}\n`;
+        }
+        
+        output.innerHTML += '\n>_\n';
+        output.scrollTop = output.scrollHeight;
+    }
+
+    function handleExamine(target, output) {
+        if (!target) {
+            output.innerHTML += "Осмотреть что?\n";
+            return;
+        }
+        
+        if (target === currentLocation) {
+            const location = getCurrentLocation();
+            output.innerHTML += `${location.description}\n`;
+        } else if (inventory.includes(target)) {
+            output.innerHTML += `${getItemDescription(target)}\n`;
+        } else {
+            output.innerHTML += `Не вижу '${target}' здесь.\n`;
+        }
+    }
+
+    function handleMove(target, output) {
+        if (!target) {
+            output.innerHTML += "Идти куда?\n";
+            return;
+        }
+        
+        if (moveTo(target)) {
+            const location = getCurrentLocation();
+            output.innerHTML += `Перемещаюсь в ${target}...\n\n`;
+            output.innerHTML += `${location.ascii}\n`;
+            output.innerHTML += `${location.description}\n`;
+            output.innerHTML += `<div class="thought">💭 "${getRandomThought()}"</div>\n`;
+            
+            // Обновляем все окна
+            setTimeout(updateAllWindows, 100);
+        } else {
+            output.innerHTML += `Не могу попасть в '${target}' отсюда.\n`;
+        }
+    }
+
+    function handleTake(target, output) {
+        if (!target) {
+            output.innerHTML += "Взять что?\n";
+            return;
+        }
+        
+        if (takeItem(target)) {
+            output.innerHTML += `Подобрал: ${target}\n`;
+        } else {
+            output.innerHTML += `Не могу подобрать '${target}'.\n`;
+        }
+    }
+
+    function showHelp(output) {
+        output.innerHTML += `
+ДОСТУПНЫЕ КОМАНДЫ:
+
+осмотреть [объект] - Осмотреть локацию или предмет
+идти [локация]     - Переместиться в другую локацию
+взять [предмет]     - Подобрать предмет
+мысли              - Случайная мысль персонажа
+инвентарь          - Показать инвентарь
+помощь             - Эта справка
+система            - Информация о системе
+
+<div class="thought despair">💭 "Помощь? Серьёзно? Здесь нет помощи, идиот."</div>
+        \n`;
+    }
+
+    function showSystem(output) {
+        output.innerHTML += `
+VOID SYSTEM v2.0
+════════════════
+
+Статус: ФУНКЦИОНИРУЕТ (к сожалению)
+Локация: ${currentLocation}
+Память: ${diary.length} записей боли
+Хлам: ${inventory.length} предметов
+
+<div class="thought">💭 "Вся эта система - просто красивая обёртка для того, чтобы скрыть, что внутри ничего нет."</div>
+        \n`;
+    }
+
+    function updateAllWindows() {
+        document.querySelectorAll('.window').forEach(window => {
+            const content = window.querySelector('.content');
+            const title = window.querySelector('.title-bar-text').textContent;
+            
+            if (title.includes('ТЕРМИНАЛ')) {
+                initTerminal(content);
+            } else if (title.includes('КАРТА')) {
+                initMap(content);
+            } else if (title.includes('ИНВЕНТАРЬ') || title.includes('ХЛАМ')) {
+                initInventory(content);
+            }
+        });
+    }
+
+    // ======================== ИНИЦИАЛИЗАЦИЯ ========================
+    document.addEventListener('DOMContentLoaded', () => {
+        initMatrix();
+        createSnow();
+        updateClock();
+        
+        // Создаём начальные окна
+        createWindow('ТЕРМИНАЛ БЕЗНАДЁГИ', 'terminal');
+        createWindow('КАРТА ПУСТОТЫ', 'map');
+        
+        // Добавляем начальные записи
+        addDiaryEntry("Проснулся. Опять. Зачем?");
+        addDiaryEntry("Холод проникает в кости. Но я уже привык.");
+        addDiaryEntry("Интересно, есть ли где-то там, за пределами этой пустоты, что-то лучшее? Наверное, нет.");
+        
+        addSystemLog("SYSTEM_BOOT: VOID v2.0");
+        addSystemLog("USER_DETECTED: UNWILLING_PARTICIPANT");
+        addSystemLog("REALITY_STATUS: COMPROMISED");
+        
+        // Обработчики интерфейса
+        document.getElementById('start-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const menu = document.querySelector('.start-menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.start-menu') && !e.target.closest('#start-btn')) {
+                document.querySelector('.start-menu').style.display = 'none';
+            }
+        });
+    });
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent = now.toLocaleTimeString();
+        setTimeout(updateClock, 1000);
+    }
+
+    // Глобальные функции для доступа из HTML
+    window.createWindow = createWindow;
+    window.moveTo = moveTo;
+    window.updateAllWindows = updateAllWindows;
+    window.toggleMaximize = toggleMaximize;
+</script>
+
+</body>
+</html>
