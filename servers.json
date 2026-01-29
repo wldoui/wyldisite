@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "name": "ZZ",
+    "proxy_host": "84.17.47.150",
+    "proxy_port": "9002",
+    "proxy_user": "",
+    "proxy_pass": "",
+    "icon": "https://cdn.vnnet.icu/assets/zz.png",
+    "proxy_type": "http"
+  },
+  {
+    "id": "2",
+    "name": "ZZ",
+    "proxy_host": "84.17.47.149",
+    "proxy_port": "9002",
+    "proxy_user": "",
+    "proxy_pass": "",
+    "icon": "https://cdn.vnnet.icu/assets/zz.png",
+    "proxy_type": "http"
+  },
+  {
+    "id": "3",
+    "name": "ZZ",
+    "proxy_host": "84.17.47.148",
+    "proxy_port": "9002",
+    "proxy_user": "",
+    "proxy_pass": "",
+    "icon": "https://cdn.vnnet.icu/assets/zz.png",
+    "proxy_type": "http"
+  },
+  {
+    "id": "4",
+    "name": "ZZ",
+    "proxy_host": "84.17.47.147",
+    "proxy_port": "9002",
+    "proxy_user": "",
+    "proxy_pass": "",
+    "icon": "https://cdn.vnnet.icu/assets/zz.png",
+    "proxy_type": "http"
+  }
+]
